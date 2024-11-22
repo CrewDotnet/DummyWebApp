@@ -1,9 +1,8 @@
-﻿using DummyWebApp.Data;
-using DummyWebApp.Models;
-using DummyWebApp.Services.Interfaces;
+﻿using DummyWebApp.ResponseModels;
 using DummyWebApp.Services.Interfaces.Game;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using PostgreSQL.Data;
+using PostgreSQL.DataModels;
 
 namespace DummyWebApp.Controllers
 {
@@ -19,7 +18,7 @@ namespace DummyWebApp.Controllers
         }
         // GET: api/Game
         [HttpGet]
-        public async Task<ActionResult<List<GameDTO>>> Get()
+        public async Task<ActionResult<List<GameResponseWithCompany>>> Get()
         {
             var allGames = await _gameService.GetAllGames();
             if (!allGames.Any())
@@ -29,7 +28,7 @@ namespace DummyWebApp.Controllers
 
         // GET api/Game/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<GameDTO>> Get(int id)
+        public async Task<ActionResult<GameResponseWithCompany>> Get(int id)
         {
             var game = await _gameService.GetGameById(id);
             if (game == null)
@@ -39,7 +38,7 @@ namespace DummyWebApp.Controllers
 
         // POST api/Game
         [HttpPost]
-        public async Task<ActionResult<GameDTO>> Post([FromBody] Game? newGame)
+        public async Task<ActionResult<GameResponseWithCompany>> Post([FromBody] Game? newGame)
         {
             if (newGame == null)
                 return BadRequest("Bad request");

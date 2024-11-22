@@ -1,10 +1,9 @@
-﻿using DummyWebApp.Data;
-using DummyWebApp.Models;
-using DummyWebApp.Services.Interfaces;
-using DummyWebApp.Services.Interfaces.Game;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using PostgreSQL.Data;
+using PostgreSQL.DataModels;
+using PostgreSQL.Repositories.Interfaces;
 
-namespace DummyWebApp.Repositories
+namespace PostgreSQL.Repositories
 {
     public class GameRepository : IGameRepository
     {
@@ -14,9 +13,11 @@ namespace DummyWebApp.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Game>> GetGamesAsync()
+        public async Task<IEnumerable<Game>> GetAllAsync()
         {
-            var list =  await _context.Games.ToListAsync();
+            var list = await _context.Games
+                .Include(g => g.Company)
+                .ToListAsync();
             return list;
         }
 

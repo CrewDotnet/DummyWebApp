@@ -1,10 +1,12 @@
-using DummyWebApp.Data;
-using DummyWebApp.Models;
-using DummyWebApp.Repositories;
-using DummyWebApp.Services;
-using DummyWebApp.Services.Interfaces;
+using DummyWebApp;
+using DummyWebApp.Mappings;
 using DummyWebApp.Services.Interfaces.Game;
 using Microsoft.EntityFrameworkCore;
+using PostgreSQL.Data;
+using PostgreSQL.Repositories;
+using PostgreSQL.Repositories.Interfaces;
+using DummyWebApp.Services;
+using DummyWebApp.Services.Interfaces.Company;
 
 namespace DummyWebApp
 {
@@ -16,7 +18,7 @@ namespace DummyWebApp
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-
+            builder.Services.AddAutoMapper(typeof(MappingProfile));
             builder.Services.AddControllers();
             builder.Services.AddDbContext<ApiContext>(options =>
             {
@@ -36,6 +38,8 @@ namespace DummyWebApp
 
             builder.Services.AddScoped<IGameRepository, GameRepository>();
             builder.Services.AddScoped<IGameService, GameService>();
+            builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
+            builder.Services.AddScoped<ICompanyService, CompanyService>();
 
             var app = builder.Build();
             DummyData.InitializeDummyData(app);

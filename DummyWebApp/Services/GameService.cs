@@ -1,42 +1,45 @@
-﻿using DummyWebApp.Data;
-using DummyWebApp.Models;
-using DummyWebApp.Repositories;
-using DummyWebApp.Services.Interfaces;
+﻿using AutoMapper;
+using DummyWebApp.ResponseModels;
 using DummyWebApp.Services.Interfaces.Game;
-using Microsoft.AspNetCore.Mvc;
+using PostgreSQL.DataModels;
+using PostgreSQL.Repositories.Interfaces;
 
 namespace DummyWebApp.Services
 {
     public class GameService : IGameService
     {
         private readonly IGameRepository _repository;
+        private readonly IMapper _mapper;
 
-        public GameService(IGameRepository repository)
+        public GameService(IGameRepository repository, IMapper mapper)
 
         {
             _repository = repository;
+            _mapper = mapper;
         }
-        public Task<Game?> GetGameById(int id)
+        public async Task<GameResponseWithCompany?> GetGameById(int id)
         {
-            return _repository.GetByIdAsync(id);
+            var game = await _repository.GetByIdAsync(id);
+            return _mapper.Map<GameResponseWithCompany>(game);
         }
 
-        public Task<IEnumerable<Game>> GetAllGames()
+        public async Task<IEnumerable<GameResponseWithCompany>> GetAllGames()
         {
-            return _repository.GetGamesAsync();
+            var allGames = await _repository.GetAllAsync();
+            return _mapper.Map<IEnumerable<GameResponseWithCompany>>(allGames);
         }
 
-        public async Task<bool> UpdateGame(int id, Game update)
+        public async Task<GameResponseWithCompany?> UpdateGame(int id, Game update)
         {
             var game = await _repository.GetByIdAsync(id);
             if (game == null)
-                return false;
+                return null;
 
             game.Name = update.Name;
             game.Price = update.Price;
-            game.Platform = update.Platform;
+            game.Company = update.Company;
 
-            return true;
+            return _mapper.Map<GameResponseWithCompany?>(game);
         }
 
         public async Task<bool> DeleteGame(int id)
@@ -45,10 +48,10 @@ namespace DummyWebApp.Services
             return isDeleted;
         }
 
-        public async Task<IEnumerable<Game>> AddGame(Game newGame)
+        public async Task<IEnumerable<GameResponseWithCompany>> AddGame(Game newGame)
         {
             var newList = await _repository.AddAsync(newGame);
-            return newList;
+            return _mapper.Map<IEnumerable<GameResponseWithCompany>>(newList);
 
         }
     }

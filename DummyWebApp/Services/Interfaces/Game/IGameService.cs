@@ -1,13 +1,13 @@
-﻿using DummyWebApp.Models;
+﻿using DummyWebApp.ResponseModels;
 namespace DummyWebApp.Services.Interfaces.Game
 {
     public interface IGameService
     {
-        public Task<Models.Game?> GetGameById(int id);
-        public Task<IEnumerable<Models.Game>> GetAllGames();
-        public Task<bool> UpdateGame(int id, Models.Game game);
+        public Task<GameResponseWithCompany?> GetGameById(int id);
+        public Task<IEnumerable<GameResponseWithCompany>> GetAllGames();
+        public Task<GameResponseWithCompany?> UpdateGame(int id, PostgreSQL.DataModels.Game game);
         public Task<bool> DeleteGame(int id);
-        public Task<IEnumerable<Models.Game>> AddGame(Models.Game game);
+        public Task<IEnumerable<GameResponseWithCompany>> AddGame(PostgreSQL.DataModels.Game game);
 
     }
 }
