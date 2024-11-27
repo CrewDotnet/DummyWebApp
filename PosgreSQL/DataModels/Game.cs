@@ -7,5 +7,6 @@
         public decimal Price { get; set; }
         public required Company Company { get; set; }
         public int? CompanyId { get; set; }
+        public ICollection<Order> Orders { get; set; } = new List<Order>();
     }
 }

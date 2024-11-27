@@ -46,5 +46,11 @@ namespace PostgreSQL.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<IEnumerable<Game>> GetGameCollectionByIds(IEnumerable<int> ids)
+        {
+            var games = await _context.Games.Where(g => ids.Contains(g.Id)).ToListAsync();
+            return games;
+        }
     }
 }

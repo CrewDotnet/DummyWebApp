@@ -1,12 +1,10 @@
-using DummyWebApp;
 using DummyWebApp.Mappings;
-using DummyWebApp.Services.Interfaces.Game;
 using Microsoft.EntityFrameworkCore;
 using PostgreSQL.Data;
 using PostgreSQL.Repositories;
 using PostgreSQL.Repositories.Interfaces;
 using DummyWebApp.Services;
-using DummyWebApp.Services.Interfaces.Company;
+using DummyWebApp.Services.Interfaces;
 
 namespace DummyWebApp
 {
@@ -20,6 +18,17 @@ namespace DummyWebApp
             // Add services to the container.
             builder.Services.AddAutoMapper(typeof(MappingProfile));
             builder.Services.AddControllers();
+
+            builder.Services.AddScoped<IGameRepository, GameRepository>();
+            builder.Services.AddScoped<IGameService, GameService>();
+            builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
+            builder.Services.AddScoped<ICompanyService, CompanyService>();
+            builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+            builder.Services.AddScoped<ICustomerService, CustomerService>();
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
             builder.Services.AddDbContext<ApiContext>(options =>
             {
                 var connectionString = builder.Configuration.GetConnectionString("GameDatabase");
@@ -36,10 +45,6 @@ namespace DummyWebApp
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddScoped<IGameRepository, GameRepository>();
-            builder.Services.AddScoped<IGameService, GameService>();
-            builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
-            builder.Services.AddScoped<ICompanyService, CompanyService>();
 
             var app = builder.Build();
             DummyData.InitializeDummyData(app);

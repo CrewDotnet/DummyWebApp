@@ -1,6 +1,8 @@
 ﻿using DummyWebApp.ResponseModels;
 using PostgreSQL.DataModels;
 using AutoMapper;
+using DummyWebApp.RequestModels;
+
 namespace DummyWebApp.Mappings
 {
     public class MappingProfile : Profile
@@ -14,6 +16,12 @@ namespace DummyWebApp.Mappings
 
             CreateMap<Game, GameResponseWithCompany>()
                 .ForMember(dest => dest.Company, opt => opt.MapFrom(src => src.Company.Name));
+            CreateMap<Game, CustomerResponse>();
+
+            CreateMap<Customer, CustomerResponse>();
+            CreateMap<NewCustomerRequest, Customer>();
+            CreateMap<Order, OrderResponse>().ForMember(dest => dest.CustomerFullName,
+                opt => opt.MapFrom(src => $"{src.Customer.FirstName} {src.Customer.LastName}"));
         }
         private IEnumerable<GameResponseForCompany> MapGames(IEnumerable<Game> games)
         {

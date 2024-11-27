@@ -1,6 +1,6 @@
 ﻿using DummyWebApp.RequestModels;
 using DummyWebApp.ResponseModels;
-using DummyWebApp.Services.Interfaces.Company;
+using DummyWebApp.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using PostgreSQL.DataModels;
 
@@ -18,7 +18,7 @@ namespace DummyWebApp.Controllers
         {
             _companyService = companyService;
         }
-        // GET: api/Companies
+        // GET: api/Customers
         [HttpGet]
         public Task<IEnumerable<CompanyResponse>> Get()
         {
@@ -37,8 +37,8 @@ namespace DummyWebApp.Controllers
         [HttpPost]
         public async Task<ActionResult<IEnumerable<CompanyResponse>>> Post([FromBody] Company newCompany)
         {
-            var updatedCompanyList = await _companyService.AddCompany(newCompany);
-            return Ok(updatedCompanyList);
+            var newCompanyList = await _companyService.AddCompany(newCompany);
+            return Ok(newCompanyList);
         }
 
         // PUT api/Company/5

@@ -11,8 +11,8 @@ using PostgreSQL.Data;
 namespace PostgreSQL.Migrations
 {
     [DbContext(typeof(ApiContext))]
-    [Migration("20241121233546_DbSetup")]
-    partial class DbSetup
+    [Migration("20241125230749_InitDb")]
+    partial class InitDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,6 +23,21 @@ namespace PostgreSQL.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("CustomerGame", b =>
+                {
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("GamesId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("CustomerId", "GamesId");
+
+                    b.HasIndex("GamesId");
+
+                    b.ToTable("CustomerGame");
+                });
 
             modelBuilder.Entity("PostgreSQL.DataModels.Company", b =>
                 {
@@ -39,6 +54,34 @@ namespace PostgreSQL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Companies");
+                });
+
+            modelBuilder.Entity("PostgreSQL.DataModels.Customer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("EmailAddress")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("LoyaltyPoints")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("PostgreSQL.DataModels.Game", b =>
@@ -63,6 +106,21 @@ namespace PostgreSQL.Migrations
                     b.HasIndex("CompanyId");
 
                     b.ToTable("Games");
+                });
+
+            modelBuilder.Entity("CustomerGame", b =>
+                {
+                    b.HasOne("PostgreSQL.DataModels.Customer", null)
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PostgreSQL.DataModels.Game", null)
+                        .WithMany()
+                        .HasForeignKey("GamesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("PostgreSQL.DataModels.Game", b =>

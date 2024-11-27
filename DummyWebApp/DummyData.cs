@@ -38,13 +38,13 @@ public static class DummyData
 
                 var games = new List<Game>
                 {
-                    new Game { Id = 1, Name = "Elden Ring", Price = 50, Company = fromSoftware },
-                    new Game { Id = 2, Name = "eFootball", Price = 60, Company = konami },
-                    new Game { Id = 3, Name = "Pathfinder", Price = 40, Company = owlcatGames },
-                    new Game { Id = 4, Name = "Call Of duty", Price = 54, Company = activision },
-                    new Game { Id = 5, Name = "Super Mario", Price = 35, Company = nintendo },
-                    new Game { Id = 6, Name = "Sonic", Price = 67, Company = sega },
-                    new Game { Id = 7, Name = "Heroes III", Price = 15, Company = threeDO }
+                    new Game { Id = 1, Name = "Elden Ring", Price = 50m, Company = fromSoftware },
+                    new Game { Id = 2, Name = "eFootball", Price = 60m, Company = konami },
+                    new Game { Id = 3, Name = "Pathfinder", Price = 40m, Company = owlcatGames },
+                    new Game { Id = 4, Name = "Call Of duty", Price = 54m, Company = activision },
+                    new Game { Id = 5, Name = "Super Mario", Price = 35m, Company = nintendo },
+                    new Game { Id = 6, Name = "Sonic", Price = 67m, Company = sega },
+                    new Game { Id = 7, Name = "Heroes III", Price = 15m, Company = threeDO }
                 };
 
                 context.Games.AddRange(games);

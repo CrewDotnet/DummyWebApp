@@ -1,6 +1,7 @@
 ﻿using DummyWebApp.RequestModels;
 using DummyWebApp.ResponseModels;
-namespace DummyWebApp.Services.Interfaces.Company
+
+namespace DummyWebApp.Services.Interfaces
 {
     public interface ICompanyService
     {

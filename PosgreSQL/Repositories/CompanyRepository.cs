@@ -45,7 +45,7 @@ namespace PostgreSQL.Repositories
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var companyToDelete = await _context.Companies.FirstOrDefaultAsync(x => x.Id == id);
+            var companyToDelete = await _context.Companies.FirstOrDefaultAsync(c => c.Id == id);
             if (companyToDelete == null)
                 return false;
             _context.Companies.Remove(companyToDelete);

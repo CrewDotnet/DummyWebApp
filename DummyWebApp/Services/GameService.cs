@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using DummyWebApp.ResponseModels;
-using DummyWebApp.Services.Interfaces.Game;
+using DummyWebApp.Services.Interfaces;
 using PostgreSQL.DataModels;
 using PostgreSQL.Repositories.Interfaces;
 
