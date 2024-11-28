@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using DummyWebApp.ResponseModels;
+using DummyWebApp.ResponseModels.Order;
 using DummyWebApp.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using PostgreSQL.DataModels;
@@ -20,17 +21,25 @@ namespace DummyWebApp.Controllers
         }
         // GET: api/OrderController
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Order>>> GetAllOrdersAsync()
+        public async Task<ActionResult<IEnumerable<OrderResponse>>> GetAllOrdersAsync()
         {
             var orders = await _orderService.GetAllOrdersAsync();
             return Ok(orders);
         }
 
-        // GET api/OrderController/Customer ID
-        [HttpGet("{customerId}")]
-        public async Task<ActionResult<IEnumerable<Order>>> GetOrdersByCustomer(int customerId)
+        // GET api/OrderController/Order ID
+        [HttpGet("{orderId}")]
+        public async Task<ActionResult<OrderResponse>> GetOrderByIdAsync(int orderId)
         {
-            var orders = await _orderService.GetOrdersByCustomerIdAsync(customerId);
+            var order = await _orderService.GetByIdAsync(orderId);
+            return Ok(order);
+        }
+
+        // GET api/OrderController/Customer ID
+        [HttpGet("CustomerOrder/{customerId}")]
+        public async Task<ActionResult<IEnumerable<OrderResponse>>> GetOrdersByCustomer(int customerId)
+        {
+            var orders = await _orderService.GetByCustomerIdAsync(customerId);
             return Ok(orders);
         }
 

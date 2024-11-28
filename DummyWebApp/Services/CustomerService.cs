@@ -4,6 +4,9 @@ using DummyWebApp.Services.Interfaces;
 using PostgreSQL.DataModels;
 using PostgreSQL.Repositories.Interfaces;
 using DummyWebApp.RequestModels;
+using DummyWebApp.RequestModels.Customer;
+using DummyWebApp.ResponseModels.Customer;
+
 namespace DummyWebApp.Services
 {
     public class CustomerService : ICustomerService
@@ -16,23 +19,26 @@ namespace DummyWebApp.Services
             _repository = repository;
             _mapper = mapper;
         }
-        public async Task<IEnumerable<Customer>> GetAllAsync()
+        public async Task<IEnumerable<CustomerResponse>> GetAllAsync()
         {
             var customers = await _repository.GetAllAsync();
-            return _mapper.Map<IEnumerable<Customer>>(customers);
+            return _mapper.Map<IEnumerable<CustomerResponse>>(customers);
         }
 
         public async Task<CustomerResponse?> GetByIdAsync(int id)
         {
             var customer = await _repository.GetByIdAsync(id);
-            return _mapper.Map<CustomerResponse>(customer);
+            customer!.TotalAmountSpent = customer.Games?.Sum(g => g.Price) ?? 0;
+            var response = _mapper.Map<CustomerResponse>(customer);
+
+            return response;
         }
 
-        public async Task<IEnumerable<CustomerResponse>> AddAsync(NewCustomerRequest request)
+        public async Task<CustomerBaseResponse> AddAsync(NewCustomerRequest request)
         {
             var newCustomer = _mapper.Map<Customer>(request);
             var customers = await _repository.AddAsync(newCustomer);
-            return _mapper.Map<IEnumerable< CustomerResponse>> (customers);
+            return _mapper.Map<CustomerBaseResponse> (newCustomer);
         }
 
         public async Task<bool> DeleteAsync(int id)
@@ -40,7 +46,7 @@ namespace DummyWebApp.Services
             return await _repository.DeleteAsync(id);
         }
 
-        public async Task<CustomerResponse?> UpdateAsync(int id, UpdateCustomerRequest request)
+        public async Task<CustomerBaseResponse?> UpdateAsync(int id, UpdateCustomerRequest request)
         {
             var customer = await _repository.GetByIdAsync(id);
             if (customer == null)
@@ -52,7 +58,7 @@ namespace DummyWebApp.Services
             customer.EmailAddress = request.EmailAddress;
             await _repository.UpdateAsync(customer);
 
-            return _mapper.Map<CustomerResponse>(customer);
+            return _mapper.Map<CustomerBaseResponse>(customer);
         }
     }
 }

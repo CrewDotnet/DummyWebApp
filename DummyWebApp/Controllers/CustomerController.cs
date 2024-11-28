@@ -1,5 +1,7 @@
 ﻿using DummyWebApp.RequestModels;
+using DummyWebApp.RequestModels.Customer;
 using DummyWebApp.ResponseModels;
+using DummyWebApp.ResponseModels.Customer;
 using DummyWebApp.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using PostgreSQL.DataModels;

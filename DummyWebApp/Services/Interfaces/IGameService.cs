@@ -1,4 +1,5 @@
 ﻿using DummyWebApp.ResponseModels;
+using DummyWebApp.ResponseModels.Game;
 
 namespace DummyWebApp.Services.Interfaces
 {

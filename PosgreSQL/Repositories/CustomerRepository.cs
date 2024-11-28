@@ -16,21 +16,29 @@ namespace PostgreSQL.Repositories
         }
         public async Task<IEnumerable<Customer>> GetAllAsync()
         {
-            var customers = await _context.Customers.Include(c => c.Games).ToListAsync();
+            var customers = await _context.Customers
+                .Include(c => c.Games)!
+                //.ThenInclude(g => g.Company)
+                .ToListAsync();
             return customers;
         }
 
         public async Task<Customer?> GetByIdAsync(int id)
         {
-            var customer = await _context.Customers.FirstOrDefaultAsync(c => c.Id == id);
+            var customer = await _context.Customers
+                .Include(c => c.Games)!
+                .ThenInclude(g => g.Company)
+                .Include(c => c.Games)!
+                .ThenInclude(g => g.Orders)
+                .FirstOrDefaultAsync(c => c.Id == id);
             return customer;
         }
 
         public async Task<IEnumerable<Customer>> AddAsync(Customer newCustomer)
         {
             {
-                if (_context.Customers.Any(c => c.FirstName == newCustomer.FirstName))
-                    throw new ArgumentException("Customer with same name already exists");
+                if (_context.Customers.Any(c => c.EmailAddress == newCustomer.EmailAddress))
+                    throw new ArgumentException("Customer with same email already exists");
 
                 newCustomer.Id = _context.Customers.Max(c => c.Id) + 1;
                 _context.Customers.Add(newCustomer);

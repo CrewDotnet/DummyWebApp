@@ -1,5 +1,7 @@
 ﻿using DummyWebApp.RequestModels;
+using DummyWebApp.RequestModels.Company;
 using DummyWebApp.ResponseModels;
+using DummyWebApp.ResponseModels.Company;
 
 namespace DummyWebApp.Services.Interfaces
 {

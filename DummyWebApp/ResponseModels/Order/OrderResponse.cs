@@ -1,6 +1,6 @@
-﻿using PostgreSQL.DataModels;
+﻿using DummyWebApp.ResponseModels.Game;
 
-namespace DummyWebApp.ResponseModels
+namespace DummyWebApp.ResponseModels.Order
 {
     public class OrderResponse2
     {
@@ -10,7 +10,7 @@ namespace DummyWebApp.ResponseModels
     {
         public int Id { get; set; }
         public required string CustomerFullName { get; set; }
-        public required IEnumerable<GameResponseWithCompany> Games { get; set; }
+        public required IEnumerable<GameBaseResponse> Games { get; set; }
         public decimal SumOrder { get; set; }
     }
 }

@@ -1,7 +1,8 @@
-﻿namespace DummyWebApp.RequestModels
+﻿namespace DummyWebApp.ResponseModels.Customer
 {
-    public class UpdateCustomerRequest
+    public class CustomerBaseResponse
     {
+        public int Id { get; set; }
         public required string FirstName { get; set; }
         public required string LastName { get; set; }
         public required string EmailAddress { get; set; }

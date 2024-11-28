@@ -21,7 +21,8 @@ namespace PostgreSQL.Repositories
         public async Task<IEnumerable<Order>> GetAllAsync()
         {
             var orders = await _context.Orders
-                .Include(o => o.Games)
+                .Include(o => o.Games)!
+                .ThenInclude(g => g.Company)
                 .Include(o => o.Customer)
                 .ToListAsync();
             return orders;
@@ -30,7 +31,8 @@ namespace PostgreSQL.Repositories
         public async Task<Order?> GetByIdAsync(int id)
         {
             var order = await _context.Orders
-                .Include(o => o.Games)
+                .Include(o => o.Games)!
+                .ThenInclude(g => g.Company)
                 .Include(o => o.Customer)
                 .FirstOrDefaultAsync(o => o.Id == id);
             return order;
@@ -55,7 +57,8 @@ namespace PostgreSQL.Repositories
         public async Task<IEnumerable<Order>> GetOrdersByCustomerIdAsync(int customerId)
         {
             var orders = await _context.Orders
-                .Include(o => o.Games)
+                .Include(o => o.Games)!
+                .ThenInclude(g => g.Company)
                 .Include(o => o.Customer)
                 .ToListAsync();
             return orders;

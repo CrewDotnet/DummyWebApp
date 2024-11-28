@@ -49,7 +49,9 @@ namespace PostgreSQL.Repositories
 
         public async Task<IEnumerable<Game>> GetGameCollectionByIds(IEnumerable<int> ids)
         {
-            var games = await _context.Games.Where(g => ids.Contains(g.Id)).ToListAsync();
+            var games = await _context.Games
+                .Include(g => g.Company)
+                .Where(g => ids.Contains(g.Id)).ToListAsync();
             return games;
         }
     }

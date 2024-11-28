@@ -1,6 +1,6 @@
-﻿namespace DummyWebApp.RequestModels
+﻿namespace DummyWebApp.RequestModels.Customer
 {
-    public class NewCustomerRequest
+    public class UpdateCustomerRequest
     {
         public required string FirstName { get; set; }
         public required string LastName { get; set; }

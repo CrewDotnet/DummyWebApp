@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using DummyWebApp.RequestModels;
+using DummyWebApp.RequestModels.Company;
 using DummyWebApp.ResponseModels;
+using DummyWebApp.ResponseModels.Company;
 using DummyWebApp.Services.Interfaces;
 using PostgreSQL.DataModels;
 using PostgreSQL.Repositories.Interfaces;

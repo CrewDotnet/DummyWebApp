@@ -1,4 +1,4 @@
-﻿namespace DummyWebApp.RequestModels
+﻿namespace DummyWebApp.RequestModels.Company
 {
     public class UpdateCompanyRequest
     {
