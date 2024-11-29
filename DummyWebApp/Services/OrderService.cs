@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
-using DummyWebApp.ResponseModels;
 using DummyWebApp.ResponseModels.Order;
 using DummyWebApp.Services.Interfaces;
-using Microsoft.EntityFrameworkCore;
 using PostgreSQL.DataModels;
 using PostgreSQL.Repositories.Interfaces;
 
@@ -66,7 +64,7 @@ namespace DummyWebApp.Services
             foreach (var game in games)
                 if (customer.LoyaltyPoints > 5)
                 {
-                    game.Price = game.Price * 0.8m;
+                    game.Price *= 0.8m;
                 }
         }
 

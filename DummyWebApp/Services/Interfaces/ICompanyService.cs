@@ -1,7 +1,6 @@
-﻿using DummyWebApp.RequestModels;
-using DummyWebApp.RequestModels.Company;
-using DummyWebApp.ResponseModels;
+﻿using DummyWebApp.RequestModels.Company;
 using DummyWebApp.ResponseModels.Company;
+using PostgreSQL.DataModels;
 
 namespace DummyWebApp.Services.Interfaces
 {
@@ -11,7 +10,7 @@ namespace DummyWebApp.Services.Interfaces
         public Task<IEnumerable<CompanyResponse>> GetAllCompanies();
         public Task<CompanyResponse?> UpdateCompany(int id, UpdateCompanyRequest update);
         public Task<bool> DeleteCompany(int id);
-        public Task<IEnumerable<CompanyResponse>> AddCompany(PostgreSQL.DataModels.Company newCompany);
+        public Task<IEnumerable<CompanyResponse>> AddCompany(Company newCompany);
 
 
     }

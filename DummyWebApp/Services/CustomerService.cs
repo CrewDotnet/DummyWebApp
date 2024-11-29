@@ -1,11 +1,9 @@
 ﻿using AutoMapper;
-using DummyWebApp.ResponseModels;
+using DummyWebApp.RequestModels.Customer;
+using DummyWebApp.ResponseModels.Customer;
 using DummyWebApp.Services.Interfaces;
 using PostgreSQL.DataModels;
 using PostgreSQL.Repositories.Interfaces;
-using DummyWebApp.RequestModels;
-using DummyWebApp.RequestModels.Customer;
-using DummyWebApp.ResponseModels.Customer;
 
 namespace DummyWebApp.Services
 {

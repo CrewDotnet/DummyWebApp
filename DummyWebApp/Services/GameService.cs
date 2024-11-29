@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using DummyWebApp.ResponseModels;
 using DummyWebApp.ResponseModels.Game;
 using DummyWebApp.Services.Interfaces;
 using PostgreSQL.DataModels;

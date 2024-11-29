@@ -1,7 +1,4 @@
-﻿using DummyWebApp.ResponseModels;
-using DummyWebApp.ResponseModels.Order;
-using Microsoft.EntityFrameworkCore;
-using PostgreSQL.DataModels;
+﻿using DummyWebApp.ResponseModels.Order;
 
 namespace DummyWebApp.Services.Interfaces
 {

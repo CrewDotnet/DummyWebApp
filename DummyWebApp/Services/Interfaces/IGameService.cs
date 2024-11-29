@@ -1,5 +1,5 @@
-﻿using DummyWebApp.ResponseModels;
-using DummyWebApp.ResponseModels.Game;
+﻿using DummyWebApp.ResponseModels.Game;
+using PostgreSQL.DataModels;
 
 namespace DummyWebApp.Services.Interfaces
 {
@@ -7,9 +7,9 @@ namespace DummyWebApp.Services.Interfaces
     {
         public Task<GameResponseWithCompany?> GetGameById(int id);
         public Task<IEnumerable<GameResponseWithCompany>> GetAllGames();
-        public Task<GameResponseWithCompany?> UpdateGame(int id, PostgreSQL.DataModels.Game game);
+        public Task<GameResponseWithCompany?> UpdateGame(int id, Game game);
         public Task<bool> DeleteGame(int id);
-        public Task<IEnumerable<GameResponseWithCompany>> AddGame(PostgreSQL.DataModels.Game game);
+        public Task<IEnumerable<GameResponseWithCompany>> AddGame(Game game);
 
     }
 }

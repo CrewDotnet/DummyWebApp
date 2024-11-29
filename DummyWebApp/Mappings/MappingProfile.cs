@@ -1,12 +1,10 @@
-﻿using DummyWebApp.ResponseModels;
-using PostgreSQL.DataModels;
-using AutoMapper;
-using DummyWebApp.RequestModels;
+﻿using AutoMapper;
 using DummyWebApp.RequestModels.Customer;
 using DummyWebApp.ResponseModels.Company;
 using DummyWebApp.ResponseModels.Customer;
 using DummyWebApp.ResponseModels.Game;
 using DummyWebApp.ResponseModels.Order;
+using PostgreSQL.DataModels;
 
 namespace DummyWebApp.Mappings
 {

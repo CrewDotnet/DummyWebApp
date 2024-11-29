@@ -1,10 +1,7 @@
 using DummyWebApp.Mappings;
-using Microsoft.EntityFrameworkCore;
-using PostgreSQL.Data;
-using PostgreSQL.Repositories;
-using PostgreSQL.Repositories.Interfaces;
 using DummyWebApp.Services;
 using DummyWebApp.Services.Interfaces;
+using PostgreSQL.Data.Extensions;
 
 namespace DummyWebApp
 {
@@ -19,28 +16,14 @@ namespace DummyWebApp
             builder.Services.AddAutoMapper(typeof(MappingProfile));
             builder.Services.AddControllers();
 
-            builder.Services.AddScoped<IGameRepository, GameRepository>();
             builder.Services.AddScoped<IGameService, GameService>();
-            builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
             builder.Services.AddScoped<ICompanyService, CompanyService>();
-            builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
             builder.Services.AddScoped<ICustomerService, CustomerService>();
-            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
             builder.Services.AddScoped<IOrderService, OrderService>();
             builder.Services.AddScoped<IOrderService, OrderService>();
-            builder.Services.AddDbContext<ApiContext>(options =>
-            {
-                var connectionString = builder.Configuration.GetConnectionString("GameDatabase");
-                if (!string.IsNullOrEmpty(connectionString))
-                {
-                    options.UseNpgsql(connectionString);
-                }
-                else
-                {
-                    options.UseInMemoryDatabase("Games");
-                }
-            });
+            
+            var connectionString = builder.Configuration.GetConnectionString("GameDatabase");
+            builder.Services.AddServiceDataLayer(builder.Configuration, connectionString);
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -59,7 +42,6 @@ namespace DummyWebApp
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 

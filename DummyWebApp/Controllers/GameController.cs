@@ -1,5 +1,4 @@
-﻿using DummyWebApp.ResponseModels;
-using DummyWebApp.ResponseModels.Game;
+﻿using DummyWebApp.ResponseModels.Game;
 using DummyWebApp.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using PostgreSQL.Data;

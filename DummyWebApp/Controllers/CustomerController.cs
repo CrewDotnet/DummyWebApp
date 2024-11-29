@@ -1,10 +1,7 @@
-﻿using DummyWebApp.RequestModels;
-using DummyWebApp.RequestModels.Customer;
-using DummyWebApp.ResponseModels;
+﻿using DummyWebApp.RequestModels.Customer;
 using DummyWebApp.ResponseModels.Customer;
 using DummyWebApp.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using PostgreSQL.DataModels;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 

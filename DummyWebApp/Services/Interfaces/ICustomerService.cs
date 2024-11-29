@@ -1,8 +1,5 @@
-﻿using DummyWebApp.RequestModels;
-using DummyWebApp.RequestModels.Customer;
-using DummyWebApp.ResponseModels;
+﻿using DummyWebApp.RequestModels.Customer;
 using DummyWebApp.ResponseModels.Customer;
-using PostgreSQL.DataModels;
 
 namespace DummyWebApp.Services.Interfaces
 {
