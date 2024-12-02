@@ -50,7 +50,6 @@ namespace DummyWebApp.Services
             if (customer == null)
                 return null;
 
-
             customer.FirstName = request.FirstName;
             customer.LastName = request.LastName;
             customer.EmailAddress = request.EmailAddress;

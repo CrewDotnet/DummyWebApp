@@ -23,7 +23,9 @@ namespace PostgreSQL.Repositories
 
         public async Task<Game?> GetByIdAsync(int id)
         {
-            return await _context.Games.FirstOrDefaultAsync(x => x.Id == id);
+            return await _context.Games
+                .Include(g => g.Company)
+                .FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<IEnumerable<Game>> AddAsync(Game newGame)
@@ -35,6 +37,12 @@ namespace PostgreSQL.Repositories
             _context.Games.Add(newGame);
             await _context.SaveChangesAsync();
             return _context.Games.ToList();
+        }
+
+        public async Task UpdateAsync(Game request)
+        {
+            _context.Games.Update(request);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<bool> DeleteAsync(int id)

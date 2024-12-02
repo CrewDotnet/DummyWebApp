@@ -1,4 +1,5 @@
-﻿using DummyWebApp.ResponseModels.Game;
+﻿using DummyWebApp.RequestModels.Game;
+using DummyWebApp.ResponseModels.Game;
 using DummyWebApp.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using PostgreSQL.Data;
@@ -38,7 +39,7 @@ namespace DummyWebApp.Controllers
 
         // POST api/Game
         [HttpPost]
-        public async Task<ActionResult<GameResponseWithCompany>> Post([FromBody] Game? newGame)
+        public async Task<ActionResult<GameResponseWithCompany>> Post([FromBody] NewGameRequest? newGame)
         {
             if (newGame == null)
                 return BadRequest("Bad request");
@@ -49,16 +50,16 @@ namespace DummyWebApp.Controllers
 
         // PUT api/Game/5
         [HttpPut("{id}")]
-        //public IActionResult Put(int id, [FromBody] Game update)
-        //{
-        //    bool gameUpdated = _gameService.UpdateGame(id,update);
-        //    if (!gameUpdated)
-        //    {
-        //        return BadRequest("Wrong request");
-        //    }
+        public async Task<ActionResult<GameResponseWithCompany?>> Put(int id, [FromBody] UpdateGameRequest update)
+        {
+            var gameUpdated = await _gameService.UpdateGame(id, update);
+            if (gameUpdated!.Name == string.Empty || gameUpdated.Price <= 0)
+            {
+                return BadRequest("Wrong request");
+            }
 
-        //    return Ok("Game has been successfully updated");
-        //}
+            return Ok("Game has been successfully updated");
+        }
 
         // DELETE api/Game/5
         [HttpDelete("{id}")]

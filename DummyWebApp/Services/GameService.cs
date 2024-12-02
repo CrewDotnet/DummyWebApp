@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DummyWebApp.RequestModels.Game;
 using DummyWebApp.ResponseModels.Game;
 using DummyWebApp.Services.Interfaces;
 using PostgreSQL.DataModels;
@@ -21,13 +22,8 @@ namespace DummyWebApp.Services
         }
         public async Task<GameResponseWithCompany?> GetGameById(int id)
         {
-            var orderIds = GetOrdersForProvidedGame(id);
-
             var game = await _gameRepository.GetByIdAsync(id);
-            var response = _mapper.Map<GameResponseWithCompany>(game);
-            response.OrderIds = orderIds;
-
-            return response;
+            return _mapper.Map<GameResponseWithCompany>(game);
         }
 
         public async Task<IEnumerable<GameResponseWithCompany>> GetAllGames()
@@ -43,17 +39,19 @@ namespace DummyWebApp.Services
             return gameResponses;
         }
 
-        public async Task<GameResponseWithCompany?> UpdateGame(int id, Game update)
+        public async Task<GameResponseWithCompany?> UpdateGame(int id, UpdateGameRequest request)
         {
-            var game = await _gameRepository.GetByIdAsync(id);
-            if (game == null)
+            var mappedRequest = _mapper.Map<Game>(request);
+            var gameToUpdate = await _gameRepository.GetByIdAsync(id);
+            if (gameToUpdate == null)
                 return null;
 
-            game.Name = update.Name;
-            game.Price = update.Price;
-            game.Company = update.Company;
+            gameToUpdate.Name = mappedRequest.Name;
+            gameToUpdate.Price = mappedRequest.Price;
 
-            return _mapper.Map<GameResponseWithCompany?>(game);
+            await _gameRepository.UpdateAsync(gameToUpdate);
+
+            return _mapper.Map<GameResponseWithCompany?>(gameToUpdate);
         }
 
         public async Task<bool> DeleteGame(int id)
@@ -62,9 +60,10 @@ namespace DummyWebApp.Services
             return isDeleted;
         }
 
-        public async Task<IEnumerable<GameResponseWithCompany>> AddGame(Game newGame)
+        public async Task<IEnumerable<GameResponseWithCompany>> AddGame(NewGameRequest newGame)
         {
-            var newList = await _gameRepository.AddAsync(newGame);
+            var mappedNewGame = _mapper.Map<Game>(newGame);
+            var newList = await _gameRepository.AddAsync(mappedNewGame);
             return _mapper.Map<IEnumerable<GameResponseWithCompany>>(newList);
 
         }

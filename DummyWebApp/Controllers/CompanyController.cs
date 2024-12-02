@@ -35,7 +35,7 @@ namespace DummyWebApp.Controllers
 
         // POST api/Company
         [HttpPost]
-        public async Task<ActionResult<IEnumerable<CompanyResponse>>> Post([FromBody] Company newCompany)
+        public async Task<ActionResult<IEnumerable<CompanyResponse>>> Post([FromBody] NewCompanyRequest newCompany)
         {
             var newCompanyList = await _companyService.AddCompany(newCompany);
             return Ok(newCompanyList);

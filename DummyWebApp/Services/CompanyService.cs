@@ -49,9 +49,10 @@ namespace DummyWebApp.Services
             return await _repository.DeleteAsync(id);
         }
 
-        public async Task<IEnumerable<CompanyResponse>> AddCompany(Company newCompany)
+        public async Task<IEnumerable<CompanyResponse>> AddCompany(NewCompanyRequest newCompany)
         {
-            var newList = await _repository.AddAsync(newCompany);
+            var mappedNewCompany = _mapper.Map<Company>(newCompany);
+            var newList = await _repository.AddAsync(mappedNewCompany);
             return _mapper.Map<IEnumerable<CompanyResponse>>(newList);
         }
     }

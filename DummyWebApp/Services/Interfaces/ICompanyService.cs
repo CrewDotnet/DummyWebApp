@@ -10,7 +10,7 @@ namespace DummyWebApp.Services.Interfaces
         public Task<IEnumerable<CompanyResponse>> GetAllCompanies();
         public Task<CompanyResponse?> UpdateCompany(int id, UpdateCompanyRequest update);
         public Task<bool> DeleteCompany(int id);
-        public Task<IEnumerable<CompanyResponse>> AddCompany(Company newCompany);
+        public Task<IEnumerable<CompanyResponse>> AddCompany(NewCompanyRequest newCompany);
 
 
     }

@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using DummyWebApp.RequestModels.Company;
 using DummyWebApp.RequestModels.Customer;
+using DummyWebApp.RequestModels.Game;
 using DummyWebApp.ResponseModels.Company;
 using DummyWebApp.ResponseModels.Customer;
 using DummyWebApp.ResponseModels.Game;
@@ -14,21 +16,23 @@ namespace DummyWebApp.Mappings
         {
             CreateMap<Company, CompanyResponse>()
                 .ForMember(dest => dest.Games, opt => opt.MapFrom(src => MapGames(src.Games!)));
+            CreateMap<NewCompanyRequest, Company>();
 
             CreateMap<Game, GameResponseForCustomer>();
-
             CreateMap<Game, GameBaseResponse>();
-
             CreateMap<Game, GameResponseWithCompany>()
                 .ForMember(dest => dest.Company, opt => opt.MapFrom(src => src.Company.Name))
                 .ForMember(dest => dest.OrderIds, opt => opt.MapFrom(src => src.Orders.Select(o => o.Id)));
-            //CreateMap<Game, CustomerResponse>();
+            CreateMap<Game, CustomerResponse>();
+            CreateMap<NewGameRequest, Game>();
+            CreateMap<UpdateGameRequest, Game>();
 
             CreateMap<Customer, CustomerResponse>()
                 .ForMember(dest => dest.Games, opt => opt.MapFrom(src => src.Games))
                 .ForMember(dest => dest.TotalAmountSpent, opt => opt.MapFrom(src => src.TotalAmountSpent));
             CreateMap<Customer, CustomerBaseResponse>();
             CreateMap<NewCustomerRequest, Customer>();
+
             CreateMap<Order, OrderResponse>()
                 .ForMember(dest => dest.CustomerFullName,
                     opt => opt.MapFrom(src => $"{src.Customer.FirstName} {src.Customer.LastName}"));
