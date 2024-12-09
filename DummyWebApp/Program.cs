@@ -1,7 +1,10 @@
 using DummyWebApp.Mappings;
 using DummyWebApp.Services;
 using DummyWebApp.Services.Interfaces;
+using DummyWebApp.Validators;
 using PostgreSQL.Data.Extensions;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 
 namespace DummyWebApp
 {
@@ -15,6 +18,9 @@ namespace DummyWebApp
             // Add services to the container.
             builder.Services.AddAutoMapper(typeof(MappingProfile));
             builder.Services.AddControllers();
+
+            builder.Services.AddFluentValidationAutoValidation();
+            builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
             builder.Services.AddScoped<IGameService, GameService>();
             builder.Services.AddScoped<ICompanyService, CompanyService>();

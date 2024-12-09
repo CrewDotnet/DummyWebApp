@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using DummyWebApp.RequestModels.Company;
 using DummyWebApp.RequestModels.Customer;
 using DummyWebApp.ResponseModels.Customer;
 using DummyWebApp.Services.Interfaces;
+using FluentValidation;
 using PostgreSQL.DataModels;
 using PostgreSQL.Repositories.Interfaces;
 
@@ -26,16 +28,21 @@ namespace DummyWebApp.Services
         public async Task<CustomerResponse?> GetByIdAsync(int id)
         {
             var customer = await _repository.GetByIdAsync(id);
-            customer!.TotalAmountSpent = customer.Games?.Sum(g => g.Price) ?? 0;
-            var response = _mapper.Map<CustomerResponse>(customer);
+            if (customer != null)
+            {
+                customer.TotalAmountSpent = customer.Games?.Sum(g => g.Price) ?? 0;
+                var response = _mapper.Map<CustomerResponse>(customer);
 
-            return response;
+                return response;
+            }
+
+            throw new NullReferenceException("Customer not found."); ;
         }
 
         public async Task<CustomerBaseResponse> AddAsync(NewCustomerRequest request)
         {
             var newCustomer = _mapper.Map<Customer>(request);
-            var customers = await _repository.AddAsync(newCustomer);
+            await _repository.AddAsync(newCustomer);
             return _mapper.Map<CustomerBaseResponse> (newCustomer);
         }
 

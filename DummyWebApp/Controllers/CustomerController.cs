@@ -19,13 +19,19 @@ namespace DummyWebApp.Controllers
         }
         // GET: api/CustomerController
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CustomerResponse>>> Get()
+        public async Task<ActionResult<IEnumerable<CustomersDTO>>> Get()
         {
             var customers = await _customerService.GetAllAsync();
+            var response = new CustomersDTO
+            {
+                Customers = customers
+            };
             if (!customers.Any())
                 return NotFound("No data found");
-            return Ok(customers);
+            return Ok(response);
         }
+
+
 
         // GET api/CustomerController/5
         [HttpGet("{id}")]
