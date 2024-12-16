@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
-using DummyWebApp.RequestModels.Company;
-using DummyWebApp.RequestModels.Customer;
-using DummyWebApp.ResponseModels.Customer;
+using DummyWebApp.Models.RequestModels.Customer;
+using DummyWebApp.Models.RequestModels.Company;
 using DummyWebApp.Services.Interfaces;
 using FluentValidation;
 using PostgreSQL.DataModels;
 using PostgreSQL.Repositories.Interfaces;
+using DummyWebApp.Models.ResponseModels.Customer;
+using FluentResults;
+using DummyWebApp.Models.ResponseModels.Company;
 
 namespace DummyWebApp.Services
 {
@@ -19,50 +21,73 @@ namespace DummyWebApp.Services
             _repository = repository;
             _mapper = mapper;
         }
-        public async Task<IEnumerable<CustomerResponse>> GetAllAsync()
+        public async Task<Result<List<CustomerResponse>>> GetAllAsync()
         {
-            var customers = await _repository.GetAllAsync();
-            return _mapper.Map<IEnumerable<CustomerResponse>>(customers);
-        }
+            var getAlCustomers = await _repository.GetAllAsync();
 
-        public async Task<CustomerResponse?> GetByIdAsync(int id)
-        {
-            var customer = await _repository.GetByIdAsync(id);
-            if (customer != null)
+            if (getAlCustomers.IsFailed)
             {
-                customer.TotalAmountSpent = customer.Games?.Sum(g => g.Price) ?? 0;
-                var response = _mapper.Map<CustomerResponse>(customer);
-
-                return response;
+                return getAlCustomers.ToResult();
             }
 
-            throw new NullReferenceException("Customer not found."); ;
+            var result = _mapper.Map<List<CustomerResponse>>(getAlCustomers.Value);
+            return Result.Ok(result);
         }
 
-        public async Task<CustomerBaseResponse> AddAsync(NewCustomerRequest request)
+        public async Task<Result<CustomerResponse>> GetByIdAsync(int id)
         {
-            var newCustomer = _mapper.Map<Customer>(request);
-            await _repository.AddAsync(newCustomer);
-            return _mapper.Map<CustomerBaseResponse> (newCustomer);
+            var getCustomer = await _repository.GetByIdAsync(id);
+
+            if (getCustomer.IsFailed)
+            {
+                return getCustomer.ToResult();
+            }
+
+            var result = _mapper.Map<CustomerResponse>(getCustomer.Value);
+            return Result.Ok(result);
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<Result<CustomerResponse>> AddAsync(NewCustomerRequest request)
         {
-            return await _repository.DeleteAsync(id);
+            var mappedRequest = _mapper.Map<Customer>(request);
+            var result = await _repository.AddAsync(mappedRequest);
+
+            if (result.IsFailed)
+            {
+                return result.ToResult();
+            }
+
+            var response = _mapper.Map<CustomerResponse>(mappedRequest);
+
+            return Result.Ok(response);
         }
 
-        public async Task<CustomerBaseResponse?> UpdateAsync(int id, UpdateCustomerRequest request)
+        public async Task<Result<bool>> DeleteAsync(int id)
         {
-            var customer = await _repository.GetByIdAsync(id);
-            if (customer == null)
-                return null;
+            var result = await _repository.DeleteAsync(id);
+            if (result.IsFailed)
+            {
+                return result.ToResult();
+            }
+            return Result.Ok(result.Value);
+        }
 
-            customer.FirstName = request.FirstName;
-            customer.LastName = request.LastName;
-            customer.EmailAddress = request.EmailAddress;
-            await _repository.UpdateAsync(customer);
+        public async Task<Result<CustomerResponse>> UpdateAsync(int id, UpdateCustomerRequest request)
+        {
+            var getCustomer = await _repository.GetByIdAsync(id);
 
-            return _mapper.Map<CustomerBaseResponse>(customer);
+            if (getCustomer.IsFailed)
+            {
+                return getCustomer.ToResult();
+            }
+
+            getCustomer.Value.FirstName = request.FirstName;
+
+
+            await _repository.UpdateAsync(getCustomer.Value);
+
+            var response = _mapper.Map<CustomerResponse>(getCustomer.Value);
+            return Result.Ok(response);
         }
     }
 }

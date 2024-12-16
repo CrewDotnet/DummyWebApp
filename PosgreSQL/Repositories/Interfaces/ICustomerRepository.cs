@@ -1,13 +1,14 @@
-﻿using PostgreSQL.DataModels;
+﻿using FluentResults;
+using PostgreSQL.DataModels;
 
 namespace PostgreSQL.Repositories.Interfaces
 {
     public interface ICustomerRepository
     {
-        public Task<IEnumerable<Customer>> GetAllAsync();
-        public Task<Customer?> GetByIdAsync(int id);
-        public Task<IEnumerable<Customer>> AddAsync(Customer newCustomer);
-        public Task<bool> DeleteAsync(int id);
-        public Task UpdateAsync(Customer updateCustomer);
+        public Task<Result<List<Customer>>> GetAllAsync();
+        public Task<Result<Customer>> GetByIdAsync(int id);
+        public Task<Result<List<Customer>>> AddAsync(Customer request);
+        public Task<Result<bool>> DeleteAsync(int id);
+        public Task<Result> UpdateAsync(Customer updateCustomer);
     }
 }

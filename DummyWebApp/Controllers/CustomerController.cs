@@ -1,5 +1,9 @@
-﻿using DummyWebApp.RequestModels.Customer;
-using DummyWebApp.ResponseModels.Customer;
+﻿using AutoMapper;
+using DummyWebApp.Models.ErrorModel;
+using DummyWebApp.Models.RequestModels.Customer;
+using DummyWebApp.Models.ResponseModels.Customer;
+using DummyWebApp.Presenters.Customer;
+using DummyWebApp.Presenters.Erorr;
 using DummyWebApp.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,76 +16,106 @@ namespace DummyWebApp.Controllers
     public class CustomerController : ControllerBase
     {
         private readonly ICustomerService _customerService;
+        private readonly IMapper _mapper;
 
-        public CustomerController(ICustomerService customerService)
+        public CustomerController(ICustomerService customerService, IMapper mapper)
         {
             _customerService = customerService;
+            _mapper = mapper;
         }
         // GET: api/CustomerController
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<CustomersDTO>>> Get()
+        [HttpGet("~/api/Customers")]
+        [ProducesResponseType(typeof(CustomersDTO), 200)]
+        [ProducesResponseType(typeof(ErrorResponse), 400)]
+        [ProducesResponseType(typeof(ErrorResponse), 404)]
+        [ProducesResponseType(typeof(ErrorResponse), 500)]
+        public async Task<ActionResult<List<CustomersDTO>>> Get()
         {
-            var customers = await _customerService.GetAllAsync();
-            var response = new CustomersDTO
+            var result = await _customerService.GetAllAsync();
+            
+            if (result.IsSuccess)
             {
-                Customers = customers
-            };
-            if (!customers.Any())
-                return NotFound("No data found");
-            return Ok(response);
+                var customers = _mapper.Map<CustomersDTO>(result.Value);
+                var mappedResult = new CustomersDTO { Customers = customers.Customers };
+                return CustomersPresenter.PresentCustomers(mappedResult);
+            }
+
+            return ErrorPresenter.PresentErrorResponse(result.Errors);
         }
-
-
-
+        
         // GET api/CustomerController/5
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(CustomerDTO), 200)]
+        [ProducesResponseType(typeof(ErrorResponse), 400)]
+        [ProducesResponseType(typeof(ErrorResponse), 404)]
+        [ProducesResponseType(typeof(ErrorResponse), 500)]
         public async Task<ActionResult<CustomerResponse>> Get(int id)
         {
-            var customer = await _customerService.GetByIdAsync(id);
-            if (customer == null)
-                return NotFound("CustomerResponse not found");
-            return Ok(customer);
+            var result = await _customerService.GetByIdAsync(id);
+            if (result.IsSuccess)
+            {
+                var mappedResult = _mapper.Map<CustomerDTO>(result.Value);
+                return CustomerPresenter.PresentCustomer(mappedResult);
+            }
+
+            return ErrorPresenter.PresentErrorResponse(result.Errors);
         }
 
         // POST api/CustomerController
         [HttpPost]
-        public async Task<ActionResult<IEnumerable<CustomerResponse>>> Post([FromBody] NewCustomerRequest customer)
+        [ProducesResponseType(typeof(CustomerDTO), 200)]
+        [ProducesResponseType(typeof(ErrorResponse), 400)]
+        [ProducesResponseType(typeof(ErrorResponse), 404)]
+        [ProducesResponseType(typeof(ErrorResponse), 500)]
+        public async Task<ActionResult<CustomerDTO>> Post([FromBody] NewCustomerRequest request)
         {
-            if (customer.FirstName == string.Empty || customer.EmailAddress == string.Empty ||
-                customer.LastName == string.Empty)
-                return BadRequest("Bad request");
-            var customers = await _customerService.AddAsync(customer);
-            return Ok(customers);
+            {
+                var result = await _customerService.AddAsync(request);
 
+                if (result.IsSuccess)
+                {
+                    var mappedResult = _mapper.Map<CustomerDTO>(result.Value);
+                    return CustomerPresenter.PresentCustomer(mappedResult);
+                }
+
+                return ErrorPresenter.PresentErrorResponse(result.Errors);
+            }
         }
 
         // PUT api/CustomerController/5
         [HttpPut("{id}")]
-        public async Task<ActionResult<CustomerResponse?>> Put(int id, [FromBody] UpdateCustomerRequest request)
+        [ProducesResponseType(typeof(CustomerDTO), 200)]
+        [ProducesResponseType(typeof(ErrorResponse), 400)]
+        [ProducesResponseType(typeof(ErrorResponse), 404)]
+        [ProducesResponseType(typeof(ErrorResponse), 500)]
+        public async Task<ActionResult<CustomerDTO?>> Put(int id, [FromBody] UpdateCustomerRequest request)
         {
-            var customerToUpdate = await _customerService.GetByIdAsync(id);
-            if (request.FirstName == string.Empty || request.EmailAddress == string.Empty ||
-                request.LastName == string.Empty)
-                return BadRequest("Bad request");
-            var customer = await _customerService.UpdateAsync(id, request);
-            if (customerToUpdate.Equals(request))
-                return BadRequest("Bad request");
-            return Ok(customer);
+            {
+                var result = await _customerService.UpdateAsync(id, request);
+                if (result.IsSuccess)
+                {
+                    var mappedResult = _mapper.Map<CustomerDTO>(result.Value);
+                    return CustomerPresenter.PresentCustomer(mappedResult);
+                }
 
+                return ErrorPresenter.PresentErrorResponse(result.Errors);
+            }
         }
 
         // DELETE api/CustomerController/5
         [HttpDelete("{id}")]
+        [ProducesResponseType(typeof(ErrorResponse), 400)]
+        [ProducesResponseType(typeof(ErrorResponse), 404)]
+        [ProducesResponseType(typeof(ErrorResponse), 500)]
         public async Task<ActionResult<bool>> Delete(int id)
         {
-            var customers = await _customerService.GetAllAsync();
-            if (customers.Any(c => c.Id == id))
+            var result = await _customerService.DeleteAsync(id);
+            if (result.IsSuccess)
             {
-                var isDeleted = await _customerService.DeleteAsync(id);
-                return Ok(isDeleted);
+                return true;
             }
 
-            return BadRequest("Provide valid Id");
+            return ErrorPresenter.PresentErrorResponse(result.Errors);
         }
     }
 }

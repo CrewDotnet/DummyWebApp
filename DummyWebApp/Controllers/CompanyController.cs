@@ -1,6 +1,12 @@
-﻿using DummyWebApp.RequestModels.Company;
-using DummyWebApp.ResponseModels.Company;
+﻿using AutoMapper;
+using DummyWebApp.Models.ErrorModel;
+using DummyWebApp.Models.RequestModels.Company;
+using DummyWebApp.Models.ResponseModels.Company;
+using DummyWebApp.Presenters;
+using DummyWebApp.Presenters.Company;
+using DummyWebApp.Presenters.Erorr;
 using DummyWebApp.Services.Interfaces;
+using FluentResults;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -12,75 +18,101 @@ namespace DummyWebApp.Controllers
     public class CompanyController : ControllerBase
     {
         private readonly ICompanyService _companyService;
+        private readonly IMapper _mapper;
 
-        public CompanyController(ICompanyService companyService)
+        public CompanyController(ICompanyService companyService, IMapper mapper)
         {
             _companyService = companyService;
+            _mapper = mapper;
         }
         // GET: api/Customers
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<CompaniesDTO>>> Get()
+        [HttpGet("~/api/Companies")]
+        [ProducesResponseType(typeof(CompaniesDTO), 200)]
+        [ProducesResponseType(typeof(ErrorResponse), 400)]
+        [ProducesResponseType(typeof(ErrorResponse), 404)]
+        [ProducesResponseType(typeof(ErrorResponse), 500)]
+        public async Task<ActionResult<List<CompaniesDTO>>> Get()
         {
-            var companies = await _companyService.GetAllCompanies();
-            var response = new CompaniesDTO
+            var result = await _companyService.GetAllCompanies();
+
+            if (result.IsSuccess)
             {
-                Companies = companies.ToList()
-            };
-            return Ok(response);
+                var mappedResult = _mapper.Map<CompaniesDTO>(result.Value);
+                return CompaniesPresenter.PresentCompanies(mappedResult);
+            }
+
+            return ErrorPresenter.PresentErrorResponse(result.Errors);
         }
 
         // GET api/Company/5
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(CompanyDTO),200)]
+        [ProducesResponseType(typeof(ErrorResponse), 400)]
+        [ProducesResponseType(typeof(ErrorResponse), 404)]
+        [ProducesResponseType(typeof(ErrorResponse), 500)]
         public async Task<ActionResult<CompanyDTO>> Get(int id)
         {
-            var company = await _companyService.GetCompanyById(id);
-            var response = new CompanyDTO
+            var result = await _companyService.GetCompanyById(id);
+            if (result.IsSuccess)
             {
-                Company = company
-            };
-            return Ok(response);
+                var mappedResult = _mapper.Map<CompanyDTO>(result.Value);
+                return CompanyPresenter.PresentCompany(mappedResult);
+            }
+
+            return ErrorPresenter.PresentErrorResponse(result.Errors);
         }
 
         // POST api/Company
         [HttpPost]
+        [ProducesResponseType(typeof(CompanyDTO), 200)]
+        [ProducesResponseType(typeof(ErrorResponse), 400)]
+        [ProducesResponseType(typeof(ErrorResponse), 404)]
+        [ProducesResponseType(typeof(ErrorResponse), 500)]
         public async Task<ActionResult<CompanyDTO>> Post([FromBody] NewCompanyRequest request)
         {
             var result = await _companyService.AddCompany(request);
 
-            //if(!result.IsSuccess)
-            //{
-            //    return BadRequest(new { Errors = result.Errors.Select(e => e.Message).ToList() });
-            //}
-            var response = new CompanyDTO
+            if (result.IsSuccess)
             {
-                Company = result.LastOrDefault()!
-            };
-            return Ok(response);
+                var mappedResult = _mapper.Map<CompanyDTO>(result.Value);
+                return CompanyPresenter.PresentCompany(mappedResult);
+            }
+
+            return ErrorPresenter.PresentErrorResponse(result.Errors);
         }
 
         // PUT api/Company/5
         [HttpPut("{id}")]
+        [ProducesResponseType(typeof(CompanyDTO), 200)]
+        [ProducesResponseType(typeof(ErrorResponse), 400)]
+        [ProducesResponseType(typeof(ErrorResponse), 404)]
+        [ProducesResponseType(typeof(ErrorResponse), 500)]
         public async Task<ActionResult<CompanyDTO>> Put(int id, [FromBody] UpdateCompanyRequest request)
         {
-            if (id <= 0)
-                return BadRequest("Invalid ID.");
-
-            var updatedCompany = await _companyService.UpdateCompany(id, request);
-            if (updatedCompany == null) return BadRequest("Bad request");
-            var response = new CompanyDTO
+            var result = await _companyService.UpdateCompany(id, request);
+            if (result.IsSuccess)
             {
-                Company = updatedCompany
-            };
-            return Ok(response);
+                var mappedResult = _mapper.Map<CompanyDTO>(result.Value);
+                return CompanyPresenter.PresentCompany(mappedResult);
+            }
 
+            return ErrorPresenter.PresentErrorResponse(result.Errors);
         }
 
         // DELETE api/Company/5
         [HttpDelete("{id}")]
+        [ProducesResponseType(typeof(ErrorResponse), 400)]
+        [ProducesResponseType(typeof(ErrorResponse), 404)]
+        [ProducesResponseType(typeof(ErrorResponse), 500)]
         public async Task<ActionResult<bool>> Delete(int id)
         {
-            var isDeleted = await _companyService.DeleteCompany(id);
-            return Ok(isDeleted);
+            var result = await _companyService.DeleteCompany(id);
+            if (result.IsSuccess)
+            {
+                return true;
+            }
+
+            return ErrorPresenter.PresentErrorResponse(result.Errors);
         }
     }
 }

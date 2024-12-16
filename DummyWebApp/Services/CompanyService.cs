@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using DummyWebApp.RequestModels.Company;
-using DummyWebApp.ResponseModels.Company;
+using DummyWebApp.Models.RequestModels.Company;
+using DummyWebApp.Models.ResponseModels.Company;
 using DummyWebApp.Services.Interfaces;
 using FluentResults;
 using FluentValidation;
@@ -13,59 +13,79 @@ namespace DummyWebApp.Services
     {
         private readonly ICompanyRepository _repository;
         private readonly IMapper _mapper;
-        private readonly IValidator<NewCompanyRequest> _validator;
 
-        public CompanyService(ICompanyRepository repository, IMapper mapper, IValidator<NewCompanyRequest> validator)
+        public CompanyService(ICompanyRepository repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
-            _validator = validator;
         }
 
-        public async Task<CompanyResponse> GetCompanyById(int id)
+        public async Task<Result<CompanyResponse>> GetCompanyById(int id)
         {
-            var company = await _repository.GetByIdAsync(id);
-            return _mapper.Map<CompanyResponse>(company);
+            var getCompany = await _repository.GetByIdAsync(id);
+
+            if (getCompany.IsFailed)
+            {
+                return getCompany.ToResult();
+            }
+
+            var result = _mapper.Map<CompanyResponse>(getCompany.Value);
+            return Result.Ok(result);
         }
 
-        public async Task<IEnumerable<CompanyResponse>> GetAllCompanies()
+        public async Task<Result<List<CompanyResponse>>> GetAllCompanies()
         {
-            var allCompanies = await _repository.GetAllAsync();
-            return _mapper.Map<IEnumerable<CompanyResponse>>(allCompanies);
+            var getAllCompanies = await _repository.GetAllAsync();
+
+            if (getAllCompanies.IsFailed)
+            {
+                return getAllCompanies.ToResult();
+            }
+
+            var result = _mapper.Map<List<CompanyResponse>>(getAllCompanies.Value);
+            return Result.Ok(result);
         }
 
-        public async Task<CompanyResponse?> UpdateCompany(int id, UpdateCompanyRequest request)
+        public async Task<Result<CompanyResponse>> UpdateCompany(int id, UpdateCompanyRequest request)
         {
-            var company = await _repository.GetByIdAsync(id);
-            if (company == null)
-                return null;
+            var getCompany = await _repository.GetByIdAsync(id);
 
-            company.Name = request.Name;
-            await _repository.UpdateAsync(company);
+            if (getCompany.IsFailed)
+            {
+                return getCompany.ToResult();
+            }
 
-            return _mapper.Map<CompanyResponse>(company);
+            getCompany.Value.Name = request.Name;
 
+            await _repository.UpdateAsync(getCompany.Value);
+
+            var response = _mapper.Map<CompanyResponse>(getCompany.Value);
+            return Result.Ok(response);
         }
 
-        public async Task<bool> DeleteCompany(int id)
+        public async Task<Result<bool>> DeleteCompany(int id)
         {
-            return await _repository.DeleteAsync(id);
+            var result = await _repository.DeleteAsync(id);
+            if (result.IsFailed)
+            {
+                return result.ToResult();
+            }
+            return Result.Ok(result.Value);
         }
 
-        public async Task<IEnumerable<CompanyResponse>> AddCompany(NewCompanyRequest request)
+        public async Task<Result<CompanyResponse>> AddCompany(NewCompanyRequest request)
         {
-            var validationResult = await _validator.ValidateAsync(request);
+            var mappedRequest = _mapper.Map<Company>(request);
+            var result = await _repository.AddAsync(mappedRequest);
 
-            //if (!validationResult.IsValid)
-            //{
-            //    return Result.Fail(validationResult.Errors.Select(e => new Error(e.ErrorMessage)).ToList());
-            //}
+            if (result.IsFailed)
+            {
+                return result.ToResult();
+            }
 
-            var mappedNewCompany = _mapper.Map<Company>(request);
-            var companies = await _repository.AddAsync(mappedNewCompany);
-            var companyResponses = companies.Select(company => _mapper.Map<CompanyResponse>(company));
+            var response = _mapper.Map<CompanyResponse>(mappedRequest);
 
-            return companyResponses;
+            return Result.Ok(response);
         }
     }
 }

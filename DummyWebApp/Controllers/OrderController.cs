@@ -1,4 +1,4 @@
-﻿using DummyWebApp.ResponseModels.Order;
+﻿using DummyWebApp.Models.ResponseModels.Order;
 using DummyWebApp.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,7 +17,7 @@ namespace DummyWebApp.Controllers
             _orderService = orderService;
         }
         // GET: api/OrderController
-        [HttpGet]
+        [HttpGet("~/api/Orders")]
         public async Task<ActionResult<IEnumerable<OrderResponse>>> GetAllOrdersAsync()
         {
             var orders = await _orderService.GetAllOrdersAsync();

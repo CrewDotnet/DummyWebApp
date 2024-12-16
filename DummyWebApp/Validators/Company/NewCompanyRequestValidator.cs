@@ -1,4 +1,4 @@
-﻿using DummyWebApp.RequestModels.Company;
+﻿using DummyWebApp.Models.RequestModels.Company;
 using FluentValidation;
 
 namespace DummyWebApp.Validators.Company

@@ -1,4 +1,4 @@
-﻿using DummyWebApp.RequestModels.Game;
+﻿using DummyWebApp.Models.RequestModels.Game;
 using FluentValidation;
 using PostgreSQL.Repositories;
 using PostgreSQL.Repositories.Interfaces;

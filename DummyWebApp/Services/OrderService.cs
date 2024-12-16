@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using DummyWebApp.ResponseModels.Order;
+using DummyWebApp.Models.ResponseModels.Order;
 using DummyWebApp.Services.Interfaces;
 using PostgreSQL.DataModels;
 using PostgreSQL.Repositories.Interfaces;
@@ -39,22 +39,22 @@ namespace DummyWebApp.Services
             if (customer == null) throw new ArgumentException("Customer not found", nameof(customerId));
 
             var games = await _gameRepository.GetGameCollectionByIds(gameIds);
-            if (!games.Any()) throw new ArgumentException("No games found for the provided IDs", nameof(gameIds));
+            if (!games.Value.Any()) throw new ArgumentException("No games found for the provided IDs", nameof(gameIds));
 
-            ApplyDiscount(games, customer);
+            ApplyDiscount(games.Value, customer.Value);
 
             var order = new Order
             {
-                Customer = customer,
-                Games = games.ToList()
+                Customer = customer.Value,
+                Games = games.Value.ToList()
             };
 
-            AddOrderedGamesToCustomer(games, customer);
+            AddOrderedGamesToCustomer(games.Value, customer.Value);
             
-            customer.TotalAmountSpent += games.Sum(g => g.Price);
-            customer.LoyaltyPoints = (int)(customer.TotalAmountSpent / 20);
+            customer.Value.TotalAmountSpent += games.Value.Sum(g => g.Price);
+            customer.Value.LoyaltyPoints = (int)(customer.Value.TotalAmountSpent / 20);
 
-            await _customerRepository.UpdateAsync(customer);
+            await _customerRepository.UpdateAsync(customer.Value);
             await _orderRepository.CreateOrderAsync(order);
             return _mapper.Map<OrderResponse>(order);
         }

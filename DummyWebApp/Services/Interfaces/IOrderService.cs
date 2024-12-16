@@ -1,4 +1,4 @@
-﻿using DummyWebApp.ResponseModels.Order;
+﻿using DummyWebApp.Models.ResponseModels.Order;
 
 namespace DummyWebApp.Services.Interfaces
 {

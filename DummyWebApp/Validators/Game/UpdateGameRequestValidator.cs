@@ -1,4 +1,4 @@
-﻿using DummyWebApp.RequestModels.Game;
+﻿using DummyWebApp.Models.RequestModels.Game;
 using FluentValidation;
 
 namespace DummyWebApp.Validators.Game

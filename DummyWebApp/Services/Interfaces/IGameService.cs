@@ -1,16 +1,17 @@
-﻿using DummyWebApp.RequestModels.Game;
-using DummyWebApp.ResponseModels.Game;
+﻿using DummyWebApp.Models.RequestModels.Game;
+using DummyWebApp.Models.ResponseModels.Game;
+using FluentResults;
 using PostgreSQL.DataModels;
 
 namespace DummyWebApp.Services.Interfaces
 {
     public interface IGameService
     {
-        public Task<GameResponseWithCompany?> GetGameById(int id);
-        public Task<IEnumerable<GameResponseWithCompany>> GetAllGames();
-        public Task<GameResponseWithCompany?> UpdateGame(int id, UpdateGameRequest request);
-        public Task<bool> DeleteGame(int id);
-        public Task<IEnumerable<GameResponseWithCompany>> AddGame(NewGameRequest game);
+        public Task<Result<GameDTO>> GetGameById(int id);
+        public Task<Result<List<GameDTO>>> GetAllGames();
+        public Task<Result<GameDTO>> UpdateGame(int id, UpdateGameRequest request);
+        public Task<Result<bool>> DeleteGame(int id);
+        public Task<Result<GameDTO>> AddGame(NewGameRequest game);
 
     }
 }

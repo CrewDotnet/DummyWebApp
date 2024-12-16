@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
-using DummyWebApp.RequestModels.Company;
-using DummyWebApp.RequestModels.Customer;
-using DummyWebApp.RequestModels.Game;
-using DummyWebApp.ResponseModels.Company;
-using DummyWebApp.ResponseModels.Customer;
-using DummyWebApp.ResponseModels.Game;
-using DummyWebApp.ResponseModels.Order;
+using DummyWebApp.Models.RequestModels.Company;
+using DummyWebApp.Models.RequestModels.Customer;
+using DummyWebApp.Models.RequestModels.Game;
+using DummyWebApp.Models.ResponseModels.Company;
+using DummyWebApp.Models.ResponseModels.Customer;
+using DummyWebApp.Models.ResponseModels.Game;
+using DummyWebApp.Models.ResponseModels.Order;
 using PostgreSQL.DataModels;
 
 namespace DummyWebApp.Mappings
@@ -17,10 +17,14 @@ namespace DummyWebApp.Mappings
             CreateMap<Company, CompanyResponse>()
                 .ForMember(dest => dest.Games, opt => opt.MapFrom(src => MapGames(src.Games!)));
             CreateMap<NewCompanyRequest, Company>();
+            CreateMap<List<CompanyResponse>, CompaniesDTO>()
+                .ForMember(dest => dest.Companies, opt => opt.MapFrom(src => src));
+            CreateMap<CompanyResponse, CompanyDTO>()
+                .ForMember(dest => dest.Company, opt => opt.MapFrom(src => src));
 
             CreateMap<Game, GameResponseForCustomer>();
             CreateMap<Game, GameBaseResponse>();
-            CreateMap<Game, GameResponseWithCompany>()
+            CreateMap<Game, GameDTO>()
                 .ForMember(dest => dest.Company, opt => opt.MapFrom(src => src.Company.Name))
                 .ForMember(dest => dest.OrderIds, opt => opt.MapFrom(src => src.Orders.Select(o => o.Id)));
             CreateMap<Game, CustomerResponse>();
@@ -30,8 +34,11 @@ namespace DummyWebApp.Mappings
             CreateMap<Customer, CustomerResponse>()
                 .ForMember(dest => dest.Games, opt => opt.MapFrom(src => src.Games))
                 .ForMember(dest => dest.TotalAmountSpent, opt => opt.MapFrom(src => src.TotalAmountSpent));
-            CreateMap<Customer, CustomerBaseResponse>();
             CreateMap<NewCustomerRequest, Customer>();
+            CreateMap<CustomerResponse, CustomerDTO>()
+                .ForMember(dest => dest.Customer, opt => opt.MapFrom(src => src));
+            CreateMap<List<CustomerResponse>, CustomersDTO>()
+                .ForMember(dest => dest.Customers, opt => opt.MapFrom(src => src));
 
             CreateMap<Order, OrderResponse>()
                 .ForMember(dest => dest.CustomerFullName,

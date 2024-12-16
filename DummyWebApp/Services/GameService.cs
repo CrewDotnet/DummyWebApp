@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
-using DummyWebApp.RequestModels.Game;
-using DummyWebApp.ResponseModels.Game;
+using DummyWebApp.Models.RequestModels.Game;
+using DummyWebApp.Models.ResponseModels.Company;
+using DummyWebApp.Models.ResponseModels.Game;
 using DummyWebApp.Services.Interfaces;
+using FluentResults;
 using PostgreSQL.DataModels;
 using PostgreSQL.Repositories.Interfaces;
 
@@ -20,52 +22,74 @@ namespace DummyWebApp.Services
             _orderRepository = orderRepository;
             _mapper = mapper;
         }
-        public async Task<GameResponseWithCompany?> GetGameById(int id)
+        public async Task<Result<GameDTO>> GetGameById(int id)
         {
-            var game = await _gameRepository.GetByIdAsync(id);
-            return _mapper.Map<GameResponseWithCompany>(game);
+            var getGame = await _gameRepository.GetByIdAsync(id);
+            if (getGame.IsFailed)
+            {
+                return getGame.ToResult();
+            }
+            var result = _mapper.Map<GameDTO>(getGame.Value);
+            return Result.Ok(result);
         }
 
-        public async Task<IEnumerable<GameResponseWithCompany>> GetAllGames()
+        public async Task<Result<List<GameDTO>>> GetAllGames()
         {
-            var allGames = await _gameRepository.GetAllAsync();
-            var gameResponses = _mapper.Map<IEnumerable<GameResponseWithCompany>>(allGames);
-            foreach (var gameResponse in gameResponses)
+            var getAllGames = await _gameRepository.GetAllAsync();
+            if (getAllGames.IsFailed)
             {
-                var orderIds = GetOrdersForProvidedGame(gameResponse.Id);
-                gameResponse.OrderIds = orderIds.ToList();
+                return getAllGames.ToResult();
+            }
+            var results = _mapper.Map<List<GameDTO>>(getAllGames.Value);
+            foreach (var result in results)
+            {
+                var orderIds = GetOrdersForProvidedGame(result.Id);
+                result.OrderIds = orderIds.ToList();
             }
 
-            return gameResponses;
+            return Result.Ok(results);
         }
 
-        public async Task<GameResponseWithCompany?> UpdateGame(int id, UpdateGameRequest request)
+        public async Task<Result<GameDTO>> UpdateGame(int id, UpdateGameRequest request)
         {
             var mappedRequest = _mapper.Map<Game>(request);
             var gameToUpdate = await _gameRepository.GetByIdAsync(id);
-            if (gameToUpdate == null)
-                return null;
+            if (gameToUpdate.Value == null)
+            {
+                return gameToUpdate.ToResult();
+            }
 
-            gameToUpdate.Name = mappedRequest.Name;
-            gameToUpdate.Price = mappedRequest.Price;
+            gameToUpdate.Value.Name = mappedRequest.Name;
+            gameToUpdate.Value.Price = mappedRequest.Price;
 
-            await _gameRepository.UpdateAsync(gameToUpdate);
+            await _gameRepository.UpdateAsync(gameToUpdate.Value);
 
-            return _mapper.Map<GameResponseWithCompany?>(gameToUpdate);
+            var result =  _mapper.Map<GameDTO>(gameToUpdate.Value);
+            return Result.Ok(result);
         }
 
-        public async Task<bool> DeleteGame(int id)
+        public async Task<Result<bool>> DeleteGame(int id)
         {
-            var isDeleted = await _gameRepository.DeleteAsync(id);
-            return isDeleted;
+            var result = await _gameRepository.DeleteAsync(id);
+            if (result.IsFailed)
+            {
+                return result.ToResult();
+            }
+            return Result.Ok(result.Value);
         }
 
-        public async Task<IEnumerable<GameResponseWithCompany>> AddGame(NewGameRequest newGame)
+        public async Task<Result<GameDTO>> AddGame(NewGameRequest request)
         {
-            var mappedNewGame = _mapper.Map<Game>(newGame);
-            var newList = await _gameRepository.AddAsync(mappedNewGame);
-            return _mapper.Map<IEnumerable<GameResponseWithCompany>>(newList);
+            var mappedRequest = _mapper.Map<Game>(request);
+            var result = await _gameRepository.AddAsync(mappedRequest);
 
+            if (result.IsFailed)
+            {
+                return result.ToResult();
+            }
+            var response = _mapper.Map<GameDTO>(mappedRequest);
+
+            return Result.Ok(response);
         }
 
         private IEnumerable<int> GetOrdersForProvidedGame(int id)

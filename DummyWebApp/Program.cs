@@ -5,6 +5,7 @@ using DummyWebApp.Validators;
 using PostgreSQL.Data.Extensions;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using AutoMapper;
 
 namespace DummyWebApp
 {
@@ -17,6 +18,13 @@ namespace DummyWebApp
 
             // Add services to the container.
             builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+            //var config = new MapperConfiguration(cfg =>
+            //{
+            //    cfg.AddProfile<MappingProfile>();
+            //});
+            //config.AssertConfigurationIsValid();
+
             builder.Services.AddControllers();
 
             builder.Services.AddFluentValidationAutoValidation();
@@ -29,12 +37,11 @@ namespace DummyWebApp
             builder.Services.AddScoped<IOrderService, OrderService>();
             
             var connectionString = builder.Configuration.GetConnectionString("GameDatabase");
-            builder.Services.AddServiceDataLayer(builder.Configuration, connectionString);
+            builder.Services.AddServiceDataLayer(builder.Configuration, connectionString!);
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-
-
+            
             var app = builder.Build();
             DummyData.InitializeDummyData(app);
 

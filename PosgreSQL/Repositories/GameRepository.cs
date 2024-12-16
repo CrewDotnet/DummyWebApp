@@ -1,7 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FluentResults;
+using Microsoft.EntityFrameworkCore;
 using PostgreSQL.Data;
 using PostgreSQL.DataModels;
 using PostgreSQL.Repositories.Interfaces;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace PostgreSQL.Repositories
 {
@@ -13,54 +15,157 @@ namespace PostgreSQL.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Game>> GetAllAsync()
-        {
-            var list = await _context.Games
-                .Include(g => g.Company)
-                .ToListAsync();
-            return list;
-        }
-
-        public async Task<Game?> GetByIdAsync(int id)
-        {
-            return await _context.Games
-                .Include(g => g.Company)
-                .FirstOrDefaultAsync(x => x.Id == id);
-        }
-
-        public async Task<IEnumerable<Game>> AddAsync(Game newGame)
-        {
-            if (_context.Games.Any(g => g.Name == newGame.Name))
-                throw new ArgumentException("Game with same name already exists");
-
-            newGame.Id = _context.Games.Max(g => g.Id) + 1;
-            _context.Games.Add(newGame);
-            await _context.SaveChangesAsync();
-            return _context.Games.ToList();
-        }
-
-        public async Task UpdateAsync(Game request)
-        {
-            _context.Games.Update(request);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task<bool> DeleteAsync(int id)
-        {
-            var gameToDelete = await _context.Games.FirstOrDefaultAsync(x => x.Id == id);
-            if (gameToDelete == null)
-                return false;
-            _context.Games.Remove(gameToDelete);
-            await _context.SaveChangesAsync();
-            return true;
-        }
-
-        public async Task<IEnumerable<Game>> GetGameCollectionByIds(IEnumerable<int> ids)
+        public async Task<Result<List<Game>>> GetAllAsync()
         {
             var games = await _context.Games
                 .Include(g => g.Company)
-                .Where(g => ids.Contains(g.Id)).ToListAsync();
-            return games;
+                .ToListAsync();
+            try
+            {
+                if (!games.Any())
+                {
+                    return Result.Fail(
+                        new Error("There is no game record in database").WithMetadata("StatusCode", 404));
+                }
+
+                return Result.Ok(games);
+            }
+            catch (Exception e)
+            {
+                return Result.Fail(new Error(e.Message).CausedBy(e)
+                    .WithMetadata("StatusCode", 500)
+                    .WithMetadata("ExceptionMessage", e.Message)
+                    .WithMetadata("StackTrace", e.StackTrace));
+            }
+        }
+
+        public async Task<Result<Game>> GetByIdAsync(int id)
+        {
+            var game =  await _context.Games
+                .Include(g => g.Company)
+                .FirstOrDefaultAsync(x => x.Id == id);
+            try
+            {
+                if (game == null)
+                {
+                    return Result.Fail(new Error($"No game with ID {id} ").WithMetadata("StatusCode", 404));
+                }
+                return Result.Ok(game);
+            }
+            catch (Exception e)
+            {
+                return Result.Fail(new Error(e.Message).CausedBy(e)
+                    .WithMetadata("StatusCode", 500)
+                    .WithMetadata("ExceptionMessage", e.Message)
+                    .WithMetadata("StackTrace", e.StackTrace));
+            }
+        }
+
+        public async Task<Result<List<Game>>> AddAsync(Game newGame)
+        {
+            try
+            {
+                if (_context.Games.Any(g => g.Name == newGame.Name))
+                    return Result.Fail(
+                        new Error("Game with provided name already exists").WithMetadata("StatusCode", 400));
+
+                newGame.Id = _context.Games.Max(g => g.Id) + 1;
+                _context.Games.Add(newGame);
+                await _context.SaveChangesAsync();
+
+                var newList = await _context.Games.Include(g => g.Company).ToListAsync();
+                return Result.Ok(newList);
+            }
+            catch (Exception e)
+            {
+                return Result.Fail(new Error(e.Message).CausedBy(e)
+                    .WithMetadata("StatusCode", 500)
+                    .WithMetadata("ExceptionMessage", e.Message)
+                    .WithMetadata("StackTrace", e.StackTrace));
+            }
+        }
+
+        public async Task<Result> UpdateAsync(Game request)
+        {
+            try
+            {
+                var existingGame = await _context.Companies.FirstOrDefaultAsync(c => c.Id == request.Id);
+                if (existingGame == null)
+                {
+                    return Result.Fail(new Error("Game does not exist")
+                        .WithMetadata("StatusCode", 404));
+                }
+                _context.Games.Update(request);
+                await _context.SaveChangesAsync();
+
+                return Result.Ok();
+            }
+            catch (DbUpdateException e)
+            {
+                return Result.Fail(new Error(e.Message).CausedBy(e)
+                    .WithMetadata("StatusCode", 500)
+                    .WithMetadata("ExceptionMessage", e.Message)
+                    .WithMetadata("StackTrace", e.StackTrace));
+            }
+            catch (Exception e)
+            {
+                return Result.Fail(new Error(e.Message).CausedBy(e)
+                    .WithMetadata("StatusCode", 500)
+                    .WithMetadata("ExceptionMessage", e.Message)
+                    .WithMetadata("StackTrace", e.StackTrace));
+            }
+        }
+
+        public async Task<Result<bool>> DeleteAsync(int id)
+        {
+            try
+            {
+                var gameToDelete = await _context.Games.FirstOrDefaultAsync(g => g.Id == id);
+                if (gameToDelete == null)
+                    return Result.Fail($"Game with ID {id} does not exist.");
+
+                _context.Games.Remove(gameToDelete);
+                await _context.SaveChangesAsync();
+
+                return Result.Ok(true);
+            }
+            catch (DbUpdateException e)
+            {
+                return Result.Fail(new Error(e.Message).CausedBy(e)
+                    .WithMetadata("StatusCode", 500)
+                    .WithMetadata("ExceptionMessage", e.Message)
+                    .WithMetadata("StackTrace", e.StackTrace));
+            }
+            catch (Exception e)
+            {
+                return Result.Fail(new Error(e.Message).CausedBy(e)
+                    .WithMetadata("StatusCode", 500)
+                    .WithMetadata("ExceptionMessage", e.Message)
+                    .WithMetadata("StackTrace", e.StackTrace));
+            }
+        }
+
+        public async Task<Result<List<Game>>> GetGameCollectionByIds(IEnumerable<int> ids)
+        {
+            try
+            {
+                var games = await _context.Games
+                    .Include(g => g.Company)
+                    .Where(g => ids.Contains(g.Id)).ToListAsync();
+                if (!games.Any())
+                {
+                    return Result.Fail(new Error("No game/games with provided ids").WithMetadata("StatusCode", 404));
+                }
+                return Result.Ok(games);
+            }
+            catch (Exception e)
+            {
+                return Result.Fail(new Error(e.Message).CausedBy(e)
+                    .WithMetadata("StatusCode", 500)
+                    .WithMetadata("ExceptionMessage", e.Message)
+                    .WithMetadata("StackTrace", e.StackTrace));
+            }
+
         }
     }
 }

@@ -1,5 +1,12 @@
-﻿using DummyWebApp.RequestModels.Game;
-using DummyWebApp.ResponseModels.Game;
+﻿using AutoMapper;
+using DummyWebApp.Models.ErrorModel;
+using DummyWebApp.Models.RequestModels.Game;
+using DummyWebApp.Models.ResponseModels.Company;
+using DummyWebApp.Models.ResponseModels.Game;
+using DummyWebApp.Presenters.Company;
+using DummyWebApp.Presenters.Erorr;
+using DummyWebApp.Presenters.Game;
+using DummyWebApp.Services;
 using DummyWebApp.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using PostgreSQL.Data;
@@ -12,66 +19,100 @@ namespace DummyWebApp.Controllers
     public class GameController : ControllerBase
     {
         private readonly IGameService _gameService;
+        private readonly IMapper _mapper;
 
-        public GameController(IGameService gameService, ApiContext context)
+        public GameController(IGameService gameService, IMapper mapper)
         {
             _gameService = gameService;
+            _mapper = mapper;
         }
         // GET: api/Game
-        [HttpGet]
-        public async Task<ActionResult<List<GameResponseWithCompany>>> Get()
+        [HttpGet("~/api/Games")]
+        [ProducesResponseType(typeof(GameDTO), 200)]
+        [ProducesResponseType(typeof(ErrorResponse), 400)]
+        [ProducesResponseType(typeof(ErrorResponse), 404)]
+        [ProducesResponseType(typeof(ErrorResponse), 500)]
+        public async Task<ActionResult<List<GameDTO>>> Get()
         {
-            var allGames = await _gameService.GetAllGames();
-            if (!allGames.Any())
-                return NotFound("There is no game in the list");
-            return Ok(allGames);
+            var result = await _gameService.GetAllGames();
+            if (result.IsSuccess)
+            {
+                var mappedResult = _mapper.Map<List<GameDTO>>(result.Value);
+                return GamesPresenter.PresentGames(mappedResult);
+            }
+
+            return ErrorPresenter.PresentErrorResponse(result.Errors);
         }
 
         // GET api/Game/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<GameResponseWithCompany>> Get(int id)
+        [ProducesResponseType(typeof(GameDTO), 200)]
+        [ProducesResponseType(typeof(ErrorResponse), 400)]
+        [ProducesResponseType(typeof(ErrorResponse), 404)]
+        [ProducesResponseType(typeof(ErrorResponse), 500)]
+        public async Task<ActionResult<GameDTO>> Get(int id)
         {
-            var game = await _gameService.GetGameById(id);
-            if (game == null)
-                return NotFound($"The game with ID:{id} doesn't exists");
-            return Ok(game);
+            var result = await _gameService.GetGameById(id);
+            if (result.IsSuccess)
+            {
+                var mappedResult = _mapper.Map<GameDTO>(result.Value);
+                return GamePresenter.PresentGame(mappedResult);
+            }
+
+            return ErrorPresenter.PresentErrorResponse(result.Errors);
         }
 
         // POST api/Game
         [HttpPost]
-        public async Task<ActionResult<GameResponseWithCompany>> Post([FromBody] NewGameRequest? newGame)
+        [ProducesResponseType(typeof(GameDTO), 200)]
+        [ProducesResponseType(typeof(ErrorResponse), 400)]
+        [ProducesResponseType(typeof(ErrorResponse), 404)]
+        [ProducesResponseType(typeof(ErrorResponse), 500)]
+        public async Task<ActionResult<GameDTO>> Post([FromBody] NewGameRequest request)
         {
-            if (newGame == null)
-                return BadRequest("Bad request");
-            if (string.IsNullOrWhiteSpace((newGame.Name)))
-                return BadRequest("Name required");
-            return Ok(await _gameService.AddGame(newGame));
+            var result = await _gameService.AddGame(request);
+
+            if (result.IsSuccess)
+            {
+                var mappedResult = _mapper.Map<GameDTO>(result.Value);
+                return GamePresenter.PresentGame(mappedResult);
+            }
+
+            return ErrorPresenter.PresentErrorResponse(result.Errors);
         }
 
         // PUT api/Game/5
         [HttpPut("{id}")]
-        public async Task<ActionResult<GameResponseWithCompany?>> Put(int id, [FromBody] UpdateGameRequest update)
+        [ProducesResponseType(typeof(GameDTO), 200)]
+        [ProducesResponseType(typeof(ErrorResponse), 400)]
+        [ProducesResponseType(typeof(ErrorResponse), 404)]
+        [ProducesResponseType(typeof(ErrorResponse), 500)]
+        public async Task<ActionResult<GameDTO?>> Put(int id, [FromBody] UpdateGameRequest request)
         {
-            var gameUpdated = await _gameService.UpdateGame(id, update);
-            if (gameUpdated!.Name == string.Empty || gameUpdated.Price <= 0)
+            var result = await _gameService.UpdateGame(id, request);
+            if (result.IsSuccess)
             {
-                return BadRequest("Wrong request");
+                var mappedResult = _mapper.Map<GameDTO>(result.Value);
+                return GamePresenter.PresentGame(mappedResult);
             }
 
-            return Ok("Game has been successfully updated");
+            return ErrorPresenter.PresentErrorResponse(result.Errors);
         }
 
         // DELETE api/Game/5
         [HttpDelete("{id}")]
+        [ProducesResponseType(typeof(ErrorResponse), 400)]
+        [ProducesResponseType(typeof(ErrorResponse), 404)]
+        [ProducesResponseType(typeof(ErrorResponse), 500)]
         public async Task<ActionResult<bool>> Delete(int id)
         {
-            var isDeleted = await _gameService.DeleteGame(id);
-            if (!isDeleted)
+            var result = await _gameService.DeleteGame(id);
+            if (result.IsSuccess)
             {
-                return BadRequest("Game doesn't exist");
+                return true;
             }
 
-            return Ok("Game has been successfully deleted");
+            return ErrorPresenter.PresentErrorResponse(result.Errors);
         }
     }
 }
