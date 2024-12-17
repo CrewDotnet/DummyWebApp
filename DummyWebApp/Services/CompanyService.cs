@@ -75,7 +75,7 @@ namespace DummyWebApp.Services
 
         public async Task<Result<CompanyResponse>> AddCompany(NewCompanyRequest request)
         {
-            var mappedRequest = _mapper.Map<Company>(request);
+            var mappedRequest = _mapper.Map<PostgreSQL.DataModels.CompanyService>(request);
             var result = await _repository.AddAsync(mappedRequest);
 
             if (result.IsFailed)

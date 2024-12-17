@@ -14,9 +14,9 @@ namespace DummyWebApp.Mappings
     {
         public MappingProfile()
         {
-            CreateMap<Company, CompanyResponse>()
+            CreateMap<CompanyService, CompanyResponse>()
                 .ForMember(dest => dest.Games, opt => opt.MapFrom(src => MapGames(src.Games!)));
-            CreateMap<NewCompanyRequest, Company>();
+            CreateMap<NewCompanyRequest, CompanyService>();
             CreateMap<List<CompanyResponse>, CompaniesDTO>()
                 .ForMember(dest => dest.Companies, opt => opt.MapFrom(src => src));
             CreateMap<CompanyResponse, CompanyDTO>()
@@ -25,7 +25,7 @@ namespace DummyWebApp.Mappings
             CreateMap<Game, GameResponseForCustomer>();
             CreateMap<Game, GameBaseResponse>();
             CreateMap<Game, GameDTO>()
-                .ForMember(dest => dest.Company, opt => opt.MapFrom(src => src.Company.Name))
+                .ForMember(dest => dest.Company, opt => opt.MapFrom(src => src.CompanyService.Name))
                 .ForMember(dest => dest.OrderIds, opt => opt.MapFrom(src => src.Orders.Select(o => o.Id)));
             CreateMap<Game, CustomerResponse>();
             CreateMap<NewGameRequest, Game>();

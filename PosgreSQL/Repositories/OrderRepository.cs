@@ -22,7 +22,7 @@ namespace PostgreSQL.Repositories
         {
             var orders = await _context.Orders
                 .Include(o => o.Games)!
-                .ThenInclude(g => g.Company)
+                .ThenInclude(g => g.CompanyService)
                 .Include(o => o.Customer)
                 .ToListAsync();
             return orders;
@@ -32,7 +32,7 @@ namespace PostgreSQL.Repositories
         {
             var order = await _context.Orders
                 .Include(o => o.Games)!
-                .ThenInclude(g => g.Company)
+                .ThenInclude(g => g.CompanyService)
                 .Include(o => o.Customer)
                 .FirstOrDefaultAsync(o => o.Id == id);
             return order;
@@ -58,7 +58,7 @@ namespace PostgreSQL.Repositories
         {
             var orders = await _context.Orders
                 .Include(o => o.Games)!
-                .ThenInclude(g => g.Company)
+                .ThenInclude(g => g.CompanyService)
                 .Include(o => o.Customer)
                 .ToListAsync();
             return orders;

@@ -16,7 +16,7 @@ namespace PostgreSQL.Repositories
         }
 
 
-        public async Task<Result<List<Company>>> GetAllAsync()
+        public async Task<Result<List<CompanyService>>> GetAllAsync()
         {
             try
             {
@@ -38,7 +38,7 @@ namespace PostgreSQL.Repositories
 
         }
 
-        public async Task<Result<Company>> GetByIdAsync(int id)
+        public async Task<Result<CompanyService>> GetByIdAsync(int id)
         {
             try
             {
@@ -48,7 +48,7 @@ namespace PostgreSQL.Repositories
 
                 if (getCompany == null)
                 {
-                    return Result.Fail(new Error("Company not found").WithMetadata("StatusCode", 404));
+                    return Result.Fail(new Error("CompanyService not found").WithMetadata("StatusCode", 404));
                 }
 
                 return Result.Ok(getCompany);
@@ -62,12 +62,12 @@ namespace PostgreSQL.Repositories
             }
         }
 
-        public async Task<Result<Company>> AddAsync(Company request)
+        public async Task<Result<CompanyService>> AddAsync(CompanyService request)
         {
             try
             {
                 if (_context.Companies.Any(c => c.Name == request.Name))
-                    return Result.Fail("Company with the same name already exists");
+                    return Result.Fail("CompanyService with the same name already exists");
 
                 request.Id = _context.Companies.Max(c => c.Id) + 1;
                 _context.Companies.Add(request);
@@ -93,14 +93,14 @@ namespace PostgreSQL.Repositories
             }
         }
 
-        public async Task<Result> UpdateAsync(Company request)
+        public async Task<Result> UpdateAsync(CompanyService request)
         {
             try
             {
                 var existingCompany = await _context.Companies.FirstOrDefaultAsync(c => c.Id == request.Id);
                 if (existingCompany == null)
                 {
-                    return Result.Fail(new Error("Company does not exist")
+                    return Result.Fail(new Error("CompanyService does not exist")
                         .WithMetadata("StatusCode", 404));
                 }
                 _context.Companies.Update(request);
@@ -130,7 +130,7 @@ namespace PostgreSQL.Repositories
             {
                 var companyToDelete = await _context.Companies.FirstOrDefaultAsync(c => c.Id == id);
                 if (companyToDelete == null)
-                    return Result.Fail($"Company with ID {id} does not exist.");
+                    return Result.Fail($"CompanyService with ID {id} does not exist.");
 
                 _context.Companies.Remove(companyToDelete);
                 await _context.SaveChangesAsync();

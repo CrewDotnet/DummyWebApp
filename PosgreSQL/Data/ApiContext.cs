@@ -10,7 +10,7 @@ namespace PostgreSQL.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Game>()
-                .HasOne(g => g.Company)
+                .HasOne(g => g.CompanyService)
                 .WithMany(c => c.Games)
                 .HasForeignKey(g => g.CompanyId);
             
@@ -33,7 +33,7 @@ namespace PostgreSQL.Data
         }
 
         public DbSet<Game> Games { get; set; }
-        public DbSet<Company> Companies { get; set; }
+        public DbSet<CompanyService> Companies { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Order> Orders { get; set; }
     }

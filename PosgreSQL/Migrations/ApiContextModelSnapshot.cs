@@ -51,7 +51,7 @@ namespace PostgreSQL.Migrations
                     b.ToTable("OrderGames", (string)null);
                 });
 
-            modelBuilder.Entity("PostgreSQL.DataModels.Company", b =>
+            modelBuilder.Entity("PostgreSQL.DataModels.CompanyService", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -173,11 +173,11 @@ namespace PostgreSQL.Migrations
 
             modelBuilder.Entity("PostgreSQL.DataModels.Game", b =>
                 {
-                    b.HasOne("PostgreSQL.DataModels.Company", "Company")
+                    b.HasOne("PostgreSQL.DataModels.CompanyService", "CompanyService")
                         .WithMany("Games")
                         .HasForeignKey("CompanyId");
 
-                    b.Navigation("Company");
+                    b.Navigation("CompanyService");
                 });
 
             modelBuilder.Entity("PostgreSQL.DataModels.Order", b =>
@@ -191,7 +191,7 @@ namespace PostgreSQL.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("PostgreSQL.DataModels.Company", b =>
+            modelBuilder.Entity("PostgreSQL.DataModels.CompanyService", b =>
                 {
                     b.Navigation("Games");
                 });

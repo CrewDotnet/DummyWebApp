@@ -18,7 +18,7 @@ namespace PostgreSQL.Repositories
         public async Task<Result<List<Game>>> GetAllAsync()
         {
             var games = await _context.Games
-                .Include(g => g.Company)
+                .Include(g => g.CompanyService)
                 .ToListAsync();
             try
             {
@@ -42,7 +42,7 @@ namespace PostgreSQL.Repositories
         public async Task<Result<Game>> GetByIdAsync(int id)
         {
             var game =  await _context.Games
-                .Include(g => g.Company)
+                .Include(g => g.CompanyService)
                 .FirstOrDefaultAsync(x => x.Id == id);
             try
             {
@@ -73,7 +73,7 @@ namespace PostgreSQL.Repositories
                 _context.Games.Add(newGame);
                 await _context.SaveChangesAsync();
 
-                var newList = await _context.Games.Include(g => g.Company).ToListAsync();
+                var newList = await _context.Games.Include(g => g.CompanyService).ToListAsync();
                 return Result.Ok(newList);
             }
             catch (Exception e)
@@ -150,7 +150,7 @@ namespace PostgreSQL.Repositories
             try
             {
                 var games = await _context.Games
-                    .Include(g => g.Company)
+                    .Include(g => g.CompanyService)
                     .Where(g => ids.Contains(g.Id)).ToListAsync();
                 if (!games.Any())
                 {
