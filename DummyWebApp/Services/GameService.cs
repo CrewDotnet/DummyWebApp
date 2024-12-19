@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Collections;
+using AutoMapper;
 using DummyWebApp.Models.RequestModels.Game;
 using DummyWebApp.Models.ResponseModels.Company;
 using DummyWebApp.Models.ResponseModels.Game;
@@ -40,21 +41,21 @@ namespace DummyWebApp.Services
             {
                 return getAllGames.ToResult();
             }
-            var results = _mapper.Map<List<GameDTO>>(getAllGames.Value);
-            foreach (var result in results)
+            var mappedGamesList = _mapper.Map<List<GameDTO>>(getAllGames.Value);
+            foreach (var game in mappedGamesList)
             {
-                var orderIds = GetOrdersForProvidedGame(result.Id);
-                result.OrderIds = orderIds.ToList();
+                var orderIds = GetOrdersForProvidedGame(game.Id);
+                game.OrderIds = orderIds.Result.Value.ToList();
             }
 
-            return Result.Ok(results);
+            return Result.Ok(mappedGamesList);
         }
 
         public async Task<Result<GameDTO>> UpdateGame(int id, UpdateGameRequest request)
         {
             var mappedRequest = _mapper.Map<Game>(request);
             var gameToUpdate = await _gameRepository.GetByIdAsync(id);
-            if (gameToUpdate.Value == null)
+            if (gameToUpdate.IsFailed)
             {
                 return gameToUpdate.ToResult();
             }
@@ -92,13 +93,17 @@ namespace DummyWebApp.Services
             return Result.Ok(response);
         }
 
-        private IEnumerable<int> GetOrdersForProvidedGame(int id)
+        private async Task<Result<IEnumerable<int>>> GetOrdersForProvidedGame(int id)
         {
-            var orders = _orderRepository.GetAllAsync();
-            var orderIds = orders.Result
+            var ordersResult = await _orderRepository.GetAllAsync();
+            if (ordersResult.IsFailed)
+            {
+                return Result.Fail<IEnumerable<int>>(ordersResult.Errors);
+            }
+            var orderIds = ordersResult.Value
                 .Where(o => o.Games!.Any(g => g.Id == id))
                 .Select(o => o.Id);
-            return orderIds;
+            return Result.Ok(orderIds);
         }
     }
 }

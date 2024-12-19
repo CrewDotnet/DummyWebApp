@@ -18,7 +18,7 @@ namespace PostgreSQL.Repositories
         public async Task<Result<List<Game>>> GetAllAsync()
         {
             var games = await _context.Games
-                .Include(g => g.CompanyService)
+                .Include(g => g.Company)
                 .ToListAsync();
             try
             {
@@ -42,7 +42,7 @@ namespace PostgreSQL.Repositories
         public async Task<Result<Game>> GetByIdAsync(int id)
         {
             var game =  await _context.Games
-                .Include(g => g.CompanyService)
+                .Include(g => g.Company)
                 .FirstOrDefaultAsync(x => x.Id == id);
             try
             {
@@ -61,20 +61,19 @@ namespace PostgreSQL.Repositories
             }
         }
 
-        public async Task<Result<List<Game>>> AddAsync(Game newGame)
+        public async Task<Result<Game>> AddAsync(Game request)
         {
             try
             {
-                if (_context.Games.Any(g => g.Name == newGame.Name))
+                if (_context.Games.Any(g => g.Name == request.Name))
                     return Result.Fail(
                         new Error("Game with provided name already exists").WithMetadata("StatusCode", 400));
 
-                newGame.Id = _context.Games.Max(g => g.Id) + 1;
-                _context.Games.Add(newGame);
+                request.Id = _context.Games.Max(g => g.Id) + 1;
+                _context.Games.Add(request);
                 await _context.SaveChangesAsync();
 
-                var newList = await _context.Games.Include(g => g.CompanyService).ToListAsync();
-                return Result.Ok(newList);
+                return Result.Ok(request);
             }
             catch (Exception e)
             {
@@ -150,7 +149,7 @@ namespace PostgreSQL.Repositories
             try
             {
                 var games = await _context.Games
-                    .Include(g => g.CompanyService)
+                    .Include(g => g.Company)
                     .Where(g => ids.Contains(g.Id)).ToListAsync();
                 if (!games.Any())
                 {

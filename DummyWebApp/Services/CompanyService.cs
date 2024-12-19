@@ -3,8 +3,6 @@ using DummyWebApp.Models.RequestModels.Company;
 using DummyWebApp.Models.ResponseModels.Company;
 using DummyWebApp.Services.Interfaces;
 using FluentResults;
-using FluentValidation;
-using PostgreSQL.DataModels;
 using PostgreSQL.Repositories.Interfaces;
 
 namespace DummyWebApp.Services
@@ -75,7 +73,7 @@ namespace DummyWebApp.Services
 
         public async Task<Result<CompanyResponse>> AddCompany(NewCompanyRequest request)
         {
-            var mappedRequest = _mapper.Map<PostgreSQL.DataModels.CompanyService>(request);
+            var mappedRequest = _mapper.Map<PostgreSQL.DataModels.Company>(request);
             var result = await _repository.AddAsync(mappedRequest);
 
             if (result.IsFailed)

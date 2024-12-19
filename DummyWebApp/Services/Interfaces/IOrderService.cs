@@ -1,12 +1,13 @@
 ﻿using DummyWebApp.Models.ResponseModels.Order;
+using FluentResults;
 
 namespace DummyWebApp.Services.Interfaces
 {
     public interface IOrderService
     {
-        public Task<IEnumerable<OrderResponse>> GetAllOrdersAsync();
-        public Task<OrderResponse?> GetByIdAsync(int id);
-        public Task<OrderResponse> PlaceOrderAsync(int customerId, IEnumerable<int> gameIds);
-        public Task<IEnumerable<OrderResponse>> GetByCustomerIdAsync(int customerId);
+        public Task<Result<List<OrderResponse>>> GetAllOrdersAsync();
+        public Task<Result<OrderResponse>> GetByIdAsync(int id);
+        public Task<Result<OrderResponse>> PlaceOrderAsync(int customerId, IEnumerable<int> gameIds);
+        public Task<Result<List<OrderResponse>>> GetOrdersByCustomerIdAsync(int customerId);
     }
 }

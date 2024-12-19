@@ -23,9 +23,5 @@
     <ProjectReference Include="..\PosgreSQL\PostgreSQL.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Presenters\Order\" />
-  </ItemGroup>
-
 
 </Project>

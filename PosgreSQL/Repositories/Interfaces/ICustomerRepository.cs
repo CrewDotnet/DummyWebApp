@@ -9,6 +9,6 @@ namespace PostgreSQL.Repositories.Interfaces
         public Task<Result<Customer>> GetByIdAsync(int id);
         public Task<Result<Customer>> AddAsync(Customer request);
         public Task<Result<bool>> DeleteAsync(int id);
-        public Task<Result> UpdateAsync(Customer updateCustomer);
+        public Task<Result<bool>> UpdateAsync(Customer updateCustomer);
     }
 }

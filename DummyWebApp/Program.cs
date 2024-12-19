@@ -1,7 +1,6 @@
 using DummyWebApp.Mappings;
 using DummyWebApp.Services;
 using DummyWebApp.Services.Interfaces;
-using DummyWebApp.Validators;
 using PostgreSQL.Data.Extensions;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -19,11 +18,11 @@ namespace DummyWebApp
             // Add services to the container.
             builder.Services.AddAutoMapper(typeof(MappingProfile));
 
-            //var config = new MapperConfiguration(cfg =>
-            //{
-            //    cfg.AddProfile<MappingProfile>();
-            //});
-            //config.AssertConfigurationIsValid();
+            var config = new MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile<MappingProfile>();
+            });
+            config.AssertConfigurationIsValid();
 
             builder.Services.AddControllers();
 

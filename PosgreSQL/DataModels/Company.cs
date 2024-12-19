@@ -1,6 +1,6 @@
 ﻿namespace PostgreSQL.DataModels
 {
-    public class CompanyService
+    public class Company
     {
         public int Id { get; set; }
         public required string Name { get; set; }

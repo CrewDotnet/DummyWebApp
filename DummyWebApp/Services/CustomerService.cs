@@ -84,7 +84,11 @@ namespace DummyWebApp.Services
             getCustomer.Value.FirstName = request.FirstName;
 
 
-            await _repository.UpdateAsync(getCustomer.Value);
+            var isUpdated = await _repository.UpdateAsync(getCustomer.Value);
+            if (isUpdated.IsFailed)
+            {
+                return isUpdated.ToResult();
+            }
 
             var response = _mapper.Map<CustomerResponse>(getCustomer.Value);
             return Result.Ok(response);

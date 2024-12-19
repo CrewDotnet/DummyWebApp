@@ -44,7 +44,7 @@ namespace DummyWebApp.Controllers
             return ErrorPresenter.PresentErrorResponse(result.Errors);
         }
 
-        // GET api/CompanyService/5
+        // GET api/Company/5
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(CompanyDTO),200)]
         [ProducesResponseType(typeof(ErrorResponse), 400)]
@@ -62,7 +62,7 @@ namespace DummyWebApp.Controllers
             return ErrorPresenter.PresentErrorResponse(result.Errors);
         }
 
-        // POST api/CompanyService
+        // POST api/Company
         [HttpPost]
         [ProducesResponseType(typeof(CompanyDTO), 200)]
         [ProducesResponseType(typeof(ErrorResponse), 400)]
@@ -81,7 +81,7 @@ namespace DummyWebApp.Controllers
             return ErrorPresenter.PresentErrorResponse(result.Errors);
         }
 
-        // PUT api/CompanyService/5
+        // PUT api/Company/5
         [HttpPut("{id}")]
         [ProducesResponseType(typeof(CompanyDTO), 200)]
         [ProducesResponseType(typeof(ErrorResponse), 400)]
@@ -99,7 +99,7 @@ namespace DummyWebApp.Controllers
             return ErrorPresenter.PresentErrorResponse(result.Errors);
         }
 
-        // DELETE api/CompanyService/5
+        // DELETE api/Company/5
         [HttpDelete("{id}")]
         [ProducesResponseType(typeof(ErrorResponse), 400)]
         [ProducesResponseType(typeof(ErrorResponse), 404)]

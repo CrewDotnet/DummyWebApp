@@ -45,7 +45,7 @@ namespace PostgreSQL.Repositories
             {
                 var customer = await _context.Customers
                     .Include(c => c.Games)!
-                    .ThenInclude(g => g.CompanyService)
+                    .ThenInclude(g => g.Company)
                     .Include(c => c.Games)!
                     .ThenInclude(g => g.Orders)
                     .FirstOrDefaultAsync(c => c.Id == id);
@@ -125,14 +125,14 @@ namespace PostgreSQL.Repositories
 
         }
 
-        public async Task<Result> UpdateAsync(Customer request)
+        public async Task<Result<bool>> UpdateAsync(Customer request)
         {
             try
             {
                 var existingCustomer = await _context.Customers.FirstOrDefaultAsync(c => c.Id == request.Id);
                 if (existingCustomer == null)
                 {
-                    return Result.Fail(new Error("CompanyService does not exist")
+                    return Result.Fail(new Error("Company does not exist")
                         .WithMetadata("StatusCode", 404));
                 }
                 _context.Customers.Update(request);

@@ -1,4 +1,7 @@
-﻿using DummyWebApp.Models.ResponseModels.Order;
+﻿using AutoMapper;
+using DummyWebApp.Models.ResponseModels.Order;
+using DummyWebApp.Presenters.Erorr;
+using DummyWebApp.Presenters.Order;
 using DummyWebApp.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,41 +14,71 @@ namespace DummyWebApp.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _orderService;
+        private readonly IMapper _mapper;
 
-        public OrderController(IOrderService orderService)
+        public OrderController(IOrderService orderService, IMapper mapper)
         {
             _orderService = orderService;
+            _mapper = mapper;
         }
         // GET: api/OrderController
         [HttpGet("~/api/Orders")]
-        public async Task<ActionResult<IEnumerable<OrderResponse>>> GetAllOrdersAsync()
+        public async Task<ActionResult<List<OrderResponse>>> GetAllOrdersAsync()
         {
-            var orders = await _orderService.GetAllOrdersAsync();
-            return Ok(orders);
+            var result = await _orderService.GetAllOrdersAsync();
+
+            if (result.IsSuccess)
+            {
+                var mappedResult = _mapper.Map<List<OrderResponse>>(result.Value);
+                return OrdersPresenter.PresentOrders(mappedResult);
+            }
+
+            return ErrorPresenter.PresentErrorResponse(result.Errors);
         }
 
         // GET api/OrderController/Order ID
-        [HttpGet("{orderId}")]
-        public async Task<ActionResult<OrderResponse>> GetOrderByIdAsync(int orderId)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<OrderResponse>> GetOrderByIdAsync(int id)
         {
-            var order = await _orderService.GetByIdAsync(orderId);
-            return Ok(order);
+            var result = await _orderService.GetByIdAsync(id);
+
+            if (result.IsSuccess)
+            {
+                var mappedResult = _mapper.Map<OrderResponse>(result.Value);
+                return OrderPresenter.PresentOrder(mappedResult);
+            }
+
+            return ErrorPresenter.PresentErrorResponse(result.Errors);
         }
 
         // GET api/OrderController/Customer ID
         [HttpGet("CustomerOrder/{customerId}")]
-        public async Task<ActionResult<IEnumerable<OrderResponse>>> GetOrdersByCustomer(int customerId)
+        public async Task<ActionResult<IEnumerable<OrderResponse>>> GetOrdersByCustomerId(int customerId)
         {
-            var orders = await _orderService.GetByCustomerIdAsync(customerId);
-            return Ok(orders);
+            var result = await _orderService.GetOrdersByCustomerIdAsync(customerId);
+
+            if (result.IsSuccess)
+            {
+                var mappedResult = _mapper.Map<List<OrderResponse>>(result.Value);
+                return OrdersPresenter.PresentOrders(mappedResult);
+            }
+
+            return ErrorPresenter.PresentErrorResponse(result.Errors);
         }
 
         // POST api/OrderController
         [HttpPost]
-        public async Task<OrderResponse> Post([FromQuery] int customerId, [FromBody] IEnumerable<int> gameIds)
+        public async Task<ActionResult<OrderResponse>> Post([FromQuery] int customerId, [FromBody] IEnumerable<int> gameIds)
         {
-            var newOrder = await _orderService.PlaceOrderAsync(customerId, gameIds);
-            return newOrder;
+            var result = await _orderService.PlaceOrderAsync(customerId, gameIds);
+
+            if (result.IsSuccess)
+            {
+                var mappedResult = _mapper.Map<OrderResponse>(result.Value);
+                return OrderPresenter.PresentOrder(mappedResult);
+            }
+
+            return ErrorPresenter.PresentErrorResponse(result.Errors);
         }
     }
 }

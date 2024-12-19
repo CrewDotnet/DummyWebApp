@@ -14,9 +14,11 @@ namespace DummyWebApp.Mappings
     {
         public MappingProfile()
         {
-            CreateMap<CompanyService, CompanyResponse>()
+            CreateMap<Company, CompanyResponse>()
                 .ForMember(dest => dest.Games, opt => opt.MapFrom(src => MapGames(src.Games!)));
-            CreateMap<NewCompanyRequest, CompanyService>();
+            CreateMap<NewCompanyRequest, Company>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.Games, opt => opt.Ignore());
             CreateMap<List<CompanyResponse>, CompaniesDTO>()
                 .ForMember(dest => dest.Companies, opt => opt.MapFrom(src => src));
             CreateMap<CompanyResponse, CompanyDTO>()
@@ -25,16 +27,27 @@ namespace DummyWebApp.Mappings
             CreateMap<Game, GameResponseForCustomer>();
             CreateMap<Game, GameBaseResponse>();
             CreateMap<Game, GameDTO>()
-                .ForMember(dest => dest.Company, opt => opt.MapFrom(src => src.CompanyService.Name))
+                .ForMember(dest => dest.Company, opt => opt.MapFrom(src => src.Company.Name))
                 .ForMember(dest => dest.OrderIds, opt => opt.MapFrom(src => src.Orders.Select(o => o.Id)));
-            CreateMap<Game, CustomerResponse>();
-            CreateMap<NewGameRequest, Game>();
-            CreateMap<UpdateGameRequest, Game>();
+            CreateMap<NewGameRequest, Game>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.Company, opt => opt.Ignore())
+                .ForMember(dest => dest.Orders, opt => opt.Ignore());
+            CreateMap<UpdateGameRequest, Game>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.Company, opt => opt.Ignore())
+                .ForMember(dest => dest.Orders, opt => opt.Ignore())
+                .ForMember(dest => dest.CompanyId, opt => opt.Ignore());
 
             CreateMap<Customer, CustomerResponse>()
                 .ForMember(dest => dest.Games, opt => opt.MapFrom(src => src.Games))
                 .ForMember(dest => dest.TotalAmountSpent, opt => opt.MapFrom(src => src.TotalAmountSpent));
-            CreateMap<NewCustomerRequest, Customer>();
+            CreateMap<NewCustomerRequest, Customer>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.Games, opt => opt.Ignore())
+                .ForMember(dest => dest.Orders, opt => opt.Ignore())
+                .ForMember(dest => dest.LoyaltyPoints, opt => opt.Ignore())
+                .ForMember(dest => dest.TotalAmountSpent, opt => opt.Ignore());
             CreateMap<CustomerResponse, CustomerDTO>()
                 .ForMember(dest => dest.Customer, opt => opt.MapFrom(src => src));
             CreateMap<List<CustomerResponse>, CustomersDTO>()

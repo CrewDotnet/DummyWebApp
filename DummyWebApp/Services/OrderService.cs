@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DummyWebApp.Models.ResponseModels.Order;
 using DummyWebApp.Services.Interfaces;
+using FluentResults;
 using PostgreSQL.DataModels;
 using PostgreSQL.Repositories.Interfaces;
 
@@ -21,25 +22,41 @@ namespace DummyWebApp.Services
             _mapper = mapper;
 
         }
-        public async Task<IEnumerable<OrderResponse>> GetAllOrdersAsync()
+        public async Task<Result<List<OrderResponse>>> GetAllOrdersAsync()
         {
             var orders = await _orderRepository.GetAllAsync();
-            return _mapper.Map<IEnumerable<OrderResponse>>(orders);
+            if (orders.IsFailed)
+            {
+                return orders.ToResult();
+            }
+            var result = _mapper.Map<List<OrderResponse>>(orders.Value);
+            return Result.Ok(result);
         }
 
-        public async Task<OrderResponse?> GetByIdAsync(int id)
+        public async Task<Result<OrderResponse>> GetByIdAsync(int id)
         {
             var order = await _orderRepository.GetByIdAsync(id);
-            return _mapper.Map<OrderResponse>(order);
+            if (order.IsFailed)
+            {
+                return order.ToResult();
+            }
+            var result = _mapper.Map<OrderResponse>(order.Value);
+            return Result.Ok(result);
         }
 
-        public async Task<OrderResponse> PlaceOrderAsync(int customerId, IEnumerable<int> gameIds)
+        public async Task<Result<OrderResponse>> PlaceOrderAsync(int customerId, IEnumerable<int> gameIds)
         {
             var customer = await _customerRepository.GetByIdAsync(customerId);
-            if (customer == null) throw new ArgumentException("Customer not found", nameof(customerId));
+            if (customer.IsFailed)
+            {
+                return customer.ToResult();
+            }
 
             var games = await _gameRepository.GetGameCollectionByIds(gameIds);
-            if (!games.Value.Any()) throw new ArgumentException("No games found for the provided IDs", nameof(gameIds));
+            if (games.IsFailed)
+            {
+                return games.ToResult();
+            }
 
             ApplyDiscount(games.Value, customer.Value);
 
@@ -50,13 +67,34 @@ namespace DummyWebApp.Services
             };
 
             AddOrderedGamesToCustomer(games.Value, customer.Value);
-            
-            customer.Value.TotalAmountSpent += games.Value.Sum(g => g.Price);
-            customer.Value.LoyaltyPoints = (int)(customer.Value.TotalAmountSpent / 20);
 
-            await _customerRepository.UpdateAsync(customer.Value);
-            await _orderRepository.CreateOrderAsync(order);
-            return _mapper.Map<OrderResponse>(order);
+            SummPriceOfGamesBought(customer, games);
+
+            CalculateLoyaltyPoints(customer);
+
+            var updateResult = await _customerRepository.UpdateAsync(customer.Value);
+            if (updateResult.IsFailed)
+            {
+                return Result.Fail<OrderResponse>(updateResult.Errors);
+            }
+            var result = await _orderRepository.CreateOrderAsync(order);
+            if (result.IsFailed)
+            {
+                return result.ToResult();
+            }
+            
+            var mappedResult = _mapper.Map<OrderResponse>(order);
+            return Result.Ok(mappedResult);
+        }
+
+        private static void CalculateLoyaltyPoints(Result<Customer> customer)
+        {
+            customer.Value.LoyaltyPoints = (int)(customer.Value.TotalAmountSpent / 20);
+        }
+
+        private static void SummPriceOfGamesBought(Result<Customer> customer, Result<List<Game>> games)
+        {
+            customer.Value.TotalAmountSpent += games.Value.Sum(g => g.Price);
         }
 
         private static void ApplyDiscount(IEnumerable<Game> games, Customer customer)
@@ -82,10 +120,20 @@ namespace DummyWebApp.Services
             }
         }
 
-        public async Task<IEnumerable<OrderResponse>> GetByCustomerIdAsync(int customerId)
+        public async Task<Result<List<OrderResponse>>> GetOrdersByCustomerIdAsync(int customerId)
         {
             var orders = await _orderRepository.GetOrdersByCustomerIdAsync(customerId);
-            return _mapper.Map<IEnumerable<OrderResponse>>(orders);
+            if (orders.IsFailed)
+            {
+                return orders.ToResult();
+            }
+            if (!orders.Value.Any())
+            {
+                return orders.ToResult();
+            }
+
+            var result = _mapper.Map<List<OrderResponse>>(orders.Value);
+            return Result.Ok(result);
         }
 
     }

@@ -31,7 +31,7 @@ namespace DummyWebApp.Services.UnitTests
         {
             // Arrange
             var companyId = _fixture.Create<int>();
-            var company = _fixture.Create<PostgreSQL.DataModels.CompanyService>();
+            var company = _fixture.Create<PostgreSQL.DataModels.Company>();
             var companyResponse = _fixture.Create<CompanyResponse>();
 
             _mockRepository
@@ -56,12 +56,12 @@ namespace DummyWebApp.Services.UnitTests
         {
             // Arrange
             var companyId = _fixture.Create<int>();
-            var company = _fixture.Create<PostgreSQL.DataModels.CompanyService>();
+            var company = _fixture.Create<PostgreSQL.DataModels.Company>();
             var companyResponse = _fixture.Create<CompanyResponse>();
 
             _mockRepository
                 .Setup(repo => repo.GetByIdAsync(companyId))
-                .ReturnsAsync(Result.Fail(new Error("CompanyService not found").WithMetadata("StatusCode", 404)));
+                .ReturnsAsync(Result.Fail(new Error("Company not found").WithMetadata("StatusCode", 404)));
 
             _mockMapper
                 .Setup(mapper => mapper.Map<CompanyResponse>(company))
@@ -72,14 +72,14 @@ namespace DummyWebApp.Services.UnitTests
 
             // Assert
             result.IsFailed.Should().BeTrue();
-            result.Errors.Should().ContainSingle(e => e.Message == "CompanyService not found" && e.Metadata["StatusCode"].ToString() == "404");
+            result.Errors.Should().ContainSingle(e => e.Message == "Company not found" && e.Metadata["StatusCode"].ToString() == "404");
         }
 
         [Fact]
         public async Task GetAllCompanies_ReturnsListOfAllCompanies_WhenGetAllIsSuccessful()
         {
             // Arrange
-            var companies = _fixture.Create<List<PostgreSQL.DataModels.CompanyService>>();
+            var companies = _fixture.Create<List<PostgreSQL.DataModels.Company>>();
             var companiesResponse = _fixture.Create<List<CompanyResponse>>();
 
             _mockRepository
@@ -119,7 +119,7 @@ namespace DummyWebApp.Services.UnitTests
         {
             // Arrange
             var companyId = _fixture.Create<int>();
-            var company = _fixture.Create<PostgreSQL.DataModels.CompanyService>();
+            var company = _fixture.Create<PostgreSQL.DataModels.Company>();
             var request = _fixture.Create<UpdateCompanyRequest>();
             var companyResponse = _fixture.Create<CompanyResponse>();
 
@@ -150,14 +150,14 @@ namespace DummyWebApp.Services.UnitTests
 
             _mockRepository
                 .Setup(repo => repo.GetByIdAsync(companyId))
-                .ReturnsAsync(Result.Fail(new Error("CompanyService does not exist").WithMetadata("StatusCode", 400)));
+                .ReturnsAsync(Result.Fail(new Error("Company does not exist").WithMetadata("StatusCode", 400)));
 
             // Act
             var result = await _companyService.UpdateCompany(companyId, request);
 
             // Assert
             result.IsFailed.Should().BeTrue();
-            result.Errors.Should().ContainSingle(e => e.Message == "CompanyService does not exist" && e.Metadata["StatusCode"].ToString() == "400");
+            result.Errors.Should().ContainSingle(e => e.Message == "Company does not exist" && e.Metadata["StatusCode"].ToString() == "400");
         }
 
         [Fact]
@@ -198,11 +198,11 @@ namespace DummyWebApp.Services.UnitTests
         public async Task AddCompany_ReturnsCompanyResponse_WhenSuccessful()
         {
             // Arrange
-            var request = new NewCompanyRequest { Name = "New CompanyService" };
-            var companyEntity = new PostgreSQL.DataModels.CompanyService { Name = "New CompanyService" };
-            var companyResponse = new CompanyResponse { Name = "New CompanyService" };
+            var request = new NewCompanyRequest { Name = "New Company" };
+            var companyEntity = new PostgreSQL.DataModels.Company { Name = "New Company" };
+            var companyResponse = new CompanyResponse { Name = "New Company" };
 
-            _mockMapper.Setup(m => m.Map<PostgreSQL.DataModels.CompanyService>(request)).Returns(companyEntity);
+            _mockMapper.Setup(m => m.Map<PostgreSQL.DataModels.Company>(request)).Returns(companyEntity);
             _mockMapper.Setup(m => m.Map<CompanyResponse>(companyEntity)).Returns(companyResponse);
 
             _mockRepository.Setup(repo => repo.AddAsync(companyEntity)).ReturnsAsync(Result.Ok(companyEntity));
@@ -219,10 +219,10 @@ namespace DummyWebApp.Services.UnitTests
         public async Task AddCompany_ReturnsFailure_WhenAddingCompanyFails()
         {
             // Arrange
-            var request = new NewCompanyRequest { Name = "New CompanyService" };
-            var companyEntity = new PostgreSQL.DataModels.CompanyService { Name = "New CompanyService" };
+            var request = new NewCompanyRequest { Name = "New Company" };
+            var companyEntity = new PostgreSQL.DataModels.Company { Name = "New Company" };
 
-            _mockMapper.Setup(m => m.Map<PostgreSQL.DataModels.CompanyService>(request)).Returns(companyEntity);
+            _mockMapper.Setup(m => m.Map<PostgreSQL.DataModels.Company>(request)).Returns(companyEntity);
 
             _mockRepository.Setup(repo => repo.AddAsync(companyEntity))
                 .ReturnsAsync(Result.Fail(new Error("Failed to add company").WithMetadata("StatusCode", 500)));

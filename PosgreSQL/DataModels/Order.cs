@@ -1,7 +1,4 @@
-﻿
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace PostgreSQL.DataModels
+﻿namespace PostgreSQL.DataModels
 {
     public class Order
     {
