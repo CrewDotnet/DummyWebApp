@@ -201,6 +201,10 @@ namespace DummyWebApp.Services.UnitTests
                 .Setup(repo => repo.GetByIdAsync(customerId))
                 .ReturnsAsync(Result.Ok(customer));
 
+            _mockRepository
+                .Setup(repo => repo.UpdateAsync(It.IsAny<Customer>()))
+                .ReturnsAsync(Result.Ok(true));
+
             _mockMapper
                 .Setup(mapper => mapper.Map<CustomerResponse>(customer))
                 .Returns(customerResponse);

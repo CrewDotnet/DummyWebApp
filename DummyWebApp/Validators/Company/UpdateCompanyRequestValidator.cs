@@ -9,7 +9,7 @@ namespace DummyWebApp.Validators.Company
         {
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("Name is required")
-                .Length(2, 50).WithMessage("Name must be between 2 and 50 character");
+                .Length(2, 50).WithMessage("Name must be between 2 and 50 characters");
         }
     }
 }

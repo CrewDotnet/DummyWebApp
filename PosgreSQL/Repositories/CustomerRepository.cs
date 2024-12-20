@@ -138,7 +138,7 @@ namespace PostgreSQL.Repositories
                 _context.Customers.Update(request);
                 await _context.SaveChangesAsync();
 
-                return Result.Ok();
+                return Result.Ok(true);
             }
             catch (DbUpdateException e)
             {
@@ -154,7 +154,6 @@ namespace PostgreSQL.Repositories
                     .WithMetadata("ExceptionMessage", e.Message)
                     .WithMetadata("StackTrace", e.StackTrace));
             }
-
         }
     }
 }

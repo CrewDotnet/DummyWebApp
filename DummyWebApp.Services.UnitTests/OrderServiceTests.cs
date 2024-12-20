@@ -128,8 +128,6 @@ namespace DummyWebApp.Services.UnitTests
             var customerId = _fixture.Create<int>();
             var gameIds = _fixture.Create<List<int>>();
             var customer = _fixture.Create<Customer>();
-            var games = _fixture.Create<List<Game>>();
-            var order = _fixture.Create<Order>();
             var orderDto = _fixture.Create<OrderResponse>();
             var company = _fixture.Create<Company>();
 
