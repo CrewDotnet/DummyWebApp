@@ -16,7 +16,7 @@ namespace DummyWebApp.Validators.Game
                 .NotEmpty().WithMessage("CompanyId is required")
                 .GreaterThan(0).WithMessage("CompanyId must be greater than 0")
                 .Must(g => g.GetTypeCode() == TypeCode.Int32).WithMessage("CompanyId must be integer");
-            RuleFor(g => g.Name)
+            RuleFor(g => g.Title)
                 .NotEmpty().WithMessage("Name must not be empty")
                 .NotNull().WithMessage("Name must not be null")
                 .Length(1, 50).WithMessage("Name must be between 1 and 50 characters");

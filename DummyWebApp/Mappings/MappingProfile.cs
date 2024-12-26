@@ -6,6 +6,7 @@ using DummyWebApp.Models.ResponseModels.Company;
 using DummyWebApp.Models.ResponseModels.Customer;
 using DummyWebApp.Models.ResponseModels.Game;
 using DummyWebApp.Models.ResponseModels.Order;
+using GamesClient;
 using PostgreSQL.DataModels;
 
 namespace DummyWebApp.Mappings
@@ -56,13 +57,21 @@ namespace DummyWebApp.Mappings
             CreateMap<Order, OrderResponse>()
                 .ForMember(dest => dest.CustomerFullName,
                     opt => opt.MapFrom(src => $"{src.Customer.FirstName} {src.Customer.LastName}"));
+
+            CreateMap<GameClientModel, Game>()
+                .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.Company, opt => opt.Ignore())
+                .ForMember(dest => dest.CompanyId, opt => opt.Ignore())
+                .ForMember(dest => dest.Orders, opt => opt.Ignore())
+                .ForMember(dest => dest.Price, opt => opt.Ignore());
         }
         private IEnumerable<GameBaseResponse> MapGames(IEnumerable<Game> games)
         {
             return games.Select(game => new GameBaseResponse
             {
                 Id = game.Id,
-                Name = game.Name,
+                Title = game.Title,
                 Price = game.Price
             }).ToList();
         }

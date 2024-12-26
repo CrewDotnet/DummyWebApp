@@ -6,12 +6,6 @@ using FluentResults;
 using Moq;
 using PostgreSQL.DataModels;
 using PostgreSQL.Repositories.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DummyWebApp.Models.ResponseModels.Company;
 
 namespace DummyWebApp.Services.UnitTests
 {
@@ -155,13 +149,13 @@ namespace DummyWebApp.Services.UnitTests
                 {
                     new Game
                     {
-                        Id = 73, Name = "Name1", Price = 215M,
+                        Id = 73, Title = "Name1", Price = 215M,
                         Company = company
                     },
-                    new Game { Id = 167, Name = "Name2", Price = 134M, Company = company },
+                    new Game { Id = 167, Title = "Name2", Price = 134M, Company = company },
                     new Game
                     {
-                        Id = 97, Name = "Name3", Price = 41M,
+                        Id = 97, Title = "Name3", Price = 41M,
                         Company = company
                     }
                 }));

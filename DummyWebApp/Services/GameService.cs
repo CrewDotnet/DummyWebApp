@@ -1,10 +1,9 @@
-﻿using System.Collections;
-using AutoMapper;
+﻿using AutoMapper;
 using DummyWebApp.Models.RequestModels.Game;
-using DummyWebApp.Models.ResponseModels.Company;
 using DummyWebApp.Models.ResponseModels.Game;
 using DummyWebApp.Services.Interfaces;
 using FluentResults;
+using GamesClient;
 using PostgreSQL.DataModels;
 using PostgreSQL.Repositories.Interfaces;
 
@@ -15,13 +14,15 @@ namespace DummyWebApp.Services
         private readonly IGameRepository _gameRepository;
         private readonly IOrderRepository _orderRepository;
         private readonly IMapper _mapper;
+        private readonly IGameApiClient _gameApiClient;
 
-        public GameService(IGameRepository gameRepository, IMapper mapper, IOrderRepository orderRepository)
+        public GameService(IGameRepository gameRepository, IMapper mapper, IOrderRepository orderRepository, IGameApiClient gameApiClient)
 
         {
             _gameRepository = gameRepository;
             _orderRepository = orderRepository;
             _mapper = mapper;
+            _gameApiClient = gameApiClient;
         }
         public async Task<Result<GameDTO>> GetGameById(int id)
         {
@@ -31,7 +32,7 @@ namespace DummyWebApp.Services
                 return getGame.ToResult();
             }
             var result = _mapper.Map<GameDTO>(getGame.Value);
-            return Result.Ok(result);
+            return Result.Ok(result).WithSuccess("200 Ok");
         }
 
         public async Task<Result<List<GameDTO>>> GetAllGames()
@@ -48,7 +49,7 @@ namespace DummyWebApp.Services
                 game.OrderIds = orderIds.Result.Value.ToList();
             }
 
-            return Result.Ok(mappedGamesList);
+            return Result.Ok(mappedGamesList).WithSuccess("200 Ok");
         }
 
         public async Task<Result<GameDTO>> UpdateGame(int id, UpdateGameRequest request)
@@ -60,13 +61,13 @@ namespace DummyWebApp.Services
                 return gameToUpdate.ToResult();
             }
 
-            gameToUpdate.Value.Name = mappedRequest.Name;
+            gameToUpdate.Value.Title = mappedRequest.Title;
             gameToUpdate.Value.Price = mappedRequest.Price;
 
             await _gameRepository.UpdateAsync(gameToUpdate.Value);
 
             var result =  _mapper.Map<GameDTO>(gameToUpdate.Value);
-            return Result.Ok(result);
+            return Result.Ok(result).WithSuccess("200 Ok"); ;
         }
 
         public async Task<Result<bool>> DeleteGame(int id)
@@ -76,11 +77,12 @@ namespace DummyWebApp.Services
             {
                 return result.ToResult();
             }
-            return Result.Ok(result.Value);
+            return Result.Ok(result.Value).WithSuccess("200 Ok");
         }
 
         public async Task<Result<GameDTO>> AddGame(NewGameRequest request)
         {
+
             var mappedRequest = _mapper.Map<Game>(request);
             var result = await _gameRepository.AddAsync(mappedRequest);
 
@@ -90,7 +92,7 @@ namespace DummyWebApp.Services
             }
             var response = _mapper.Map<GameDTO>(mappedRequest);
 
-            return Result.Ok(response);
+            return Result.Ok(response).WithSuccess("200 Ok");
         }
 
         private async Task<Result<IEnumerable<int>>> GetOrdersForProvidedGame(int id)
@@ -103,7 +105,9 @@ namespace DummyWebApp.Services
             var orderIds = ordersResult.Value
                 .Where(o => o.Games!.Any(g => g.Id == id))
                 .Select(o => o.Id);
-            return Result.Ok(orderIds);
+            return Result.Ok(orderIds).WithSuccess("200 Ok");
         }
+
+
     }
 }

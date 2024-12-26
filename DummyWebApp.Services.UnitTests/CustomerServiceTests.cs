@@ -48,6 +48,7 @@ namespace DummyWebApp.Services.UnitTests
             // Assert
             result.IsSuccess.Should().BeTrue();
             result.Value.Should().BeEquivalentTo(customerResponses);
+            result.Successes.Should().ContainSingle().Which.Message.Should().Be("200 Ok");
         }
 
         [Fact]
@@ -88,6 +89,7 @@ namespace DummyWebApp.Services.UnitTests
             // Assert
             result.IsSuccess.Should().BeTrue();
             result.Value.Should().BeEquivalentTo(customerResponse);
+            result.Successes.Should().ContainSingle().Which.Message.Should().Be("200 Ok");
         }
 
         [Fact]
@@ -129,6 +131,7 @@ namespace DummyWebApp.Services.UnitTests
             // Assert
             result.IsSuccess.Should().BeTrue();
             result.Value.Should().BeEquivalentTo(customerResponse);
+            result.Successes.Should().ContainSingle().Which.Message.Should().Be("200 Ok");
         }
 
         [Fact]
@@ -168,6 +171,7 @@ namespace DummyWebApp.Services.UnitTests
             // Assert
             result.IsSuccess.Should().BeTrue();
             result.Value.Should().BeTrue();
+            result.Successes.Should().ContainSingle().Which.Message.Should().Be("200 Ok");
         }
 
         [Fact]
@@ -217,6 +221,8 @@ namespace DummyWebApp.Services.UnitTests
             customer.FirstName.Should().Be(request.FirstName);
             _mockRepository.Verify(repo => repo.UpdateAsync(customer), Times.Once);
             result.Value.Should().BeEquivalentTo(customerResponse);
+            result.Successes.Should().ContainSingle().Which.Message.Should().Be("200 Ok");
+
         }
 
         [Fact]

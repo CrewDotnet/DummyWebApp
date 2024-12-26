@@ -4,7 +4,6 @@ using DummyWebApp.Models.ResponseModels.Company;
 using FluentAssertions;
 using FluentResults;
 using Moq;
-using PostgreSQL.DataModels;
 using PostgreSQL.Repositories.Interfaces;
 using DummyWebApp.Models.RequestModels.Company;
 
@@ -48,6 +47,7 @@ namespace DummyWebApp.Services.UnitTests
             // Assert
             result.IsSuccess.Should().BeTrue();
             result.Value.Should().BeEquivalentTo(companyResponse);
+            result.Successes.Should().ContainSingle().Which.Message.Should().Be("200 Ok");
 
         }
 
@@ -97,6 +97,8 @@ namespace DummyWebApp.Services.UnitTests
             result.IsSuccess.Should().BeTrue();
             result.Value.Should().NotBeNull();
             result.Value.Should().BeEquivalentTo(companiesResponse);
+            result.Successes.Should().ContainSingle().Which.Message.Should().Be("200 Ok");
+
         }
         [Fact]
         public async Task GetAllCompanies_ReturnsListOfAllCompanies_WhenGetAllFails()
@@ -139,6 +141,8 @@ namespace DummyWebApp.Services.UnitTests
             company.Name.Should().Be(request.Name);
             _mockRepository.Verify(repo => repo.UpdateAsync(company), Times.Once);
             result.Value.Should().Be(companyResponse);
+            result.Successes.Should().ContainSingle().Which.Message.Should().Be("200 Ok");
+
         }
 
         [Fact]
@@ -176,6 +180,7 @@ namespace DummyWebApp.Services.UnitTests
             // Assert
             result.IsSuccess.Should().BeTrue();
             result.Value.Should().BeTrue();
+            result.Successes.Should().ContainSingle().Which.Message.Should().Be("200 Ok");
         }
         [Fact]
         public async Task DeleteCompany_ReturnsFailure_WhenDeletionFails()
@@ -213,6 +218,8 @@ namespace DummyWebApp.Services.UnitTests
             // Assert
             result.IsSuccess.Should().BeTrue();
             result.Value.Should().BeEquivalentTo(companyResponse);
+            result.Successes.Should().ContainSingle().Which.Message.Should().Be("200 Ok");
+
         }
 
         [Fact]

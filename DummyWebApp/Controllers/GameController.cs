@@ -1,16 +1,11 @@
 ﻿using AutoMapper;
 using DummyWebApp.Models.ErrorModel;
 using DummyWebApp.Models.RequestModels.Game;
-using DummyWebApp.Models.ResponseModels.Company;
 using DummyWebApp.Models.ResponseModels.Game;
-using DummyWebApp.Presenters.Company;
 using DummyWebApp.Presenters.Erorr;
 using DummyWebApp.Presenters.Game;
-using DummyWebApp.Services;
 using DummyWebApp.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using PostgreSQL.Data;
-using PostgreSQL.DataModels;
 
 namespace DummyWebApp.Controllers
 {

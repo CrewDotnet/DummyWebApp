@@ -31,7 +31,7 @@ namespace DummyWebApp.Services
             }
 
             var result = _mapper.Map<List<CustomerResponse>>(getAlCustomers.Value);
-            return Result.Ok(result);
+            return Result.Ok(result).WithSuccess("200 Ok");
         }
 
         public async Task<Result<CustomerResponse>> GetByIdAsync(int id)
@@ -44,7 +44,7 @@ namespace DummyWebApp.Services
             }
 
             var result = _mapper.Map<CustomerResponse>(getCustomer.Value);
-            return Result.Ok(result);
+            return Result.Ok(result).WithSuccess("200 Ok");
         }
 
         public async Task<Result<CustomerResponse>> AddAsync(NewCustomerRequest request)
@@ -59,7 +59,7 @@ namespace DummyWebApp.Services
 
             var response = _mapper.Map<CustomerResponse>(mappedRequest);
 
-            return Result.Ok(response);
+            return Result.Ok(response).WithSuccess("200 Ok");
         }
 
         public async Task<Result<bool>> DeleteAsync(int id)
@@ -69,7 +69,7 @@ namespace DummyWebApp.Services
             {
                 return result.ToResult();
             }
-            return Result.Ok(result.Value);
+            return Result.Ok(result.Value).WithSuccess("200 Ok");
         }
 
         public async Task<Result<CustomerResponse>> UpdateAsync(int id, UpdateCustomerRequest request)
@@ -91,7 +91,7 @@ namespace DummyWebApp.Services
             }
 
             var response = _mapper.Map<CustomerResponse>(getCustomer.Value);
-            return Result.Ok(response);
+            return Result.Ok(response).WithSuccess("200 Ok");
         }
     }
 }

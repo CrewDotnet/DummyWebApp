@@ -5,6 +5,7 @@ using PostgreSQL.Data.Extensions;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using AutoMapper;
+using GamesClient;
 
 namespace DummyWebApp
 {
@@ -18,11 +19,11 @@ namespace DummyWebApp
             // Add services to the container.
             builder.Services.AddAutoMapper(typeof(MappingProfile));
 
-            var config = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile<MappingProfile>();
-            });
-            config.AssertConfigurationIsValid();
+            //var config = new MapperConfiguration(cfg =>
+            //{
+            //    cfg.AddProfile<MappingProfile>();
+            //});
+            //config.AssertConfigurationIsValid();
 
             builder.Services.AddControllers();
 
@@ -37,6 +38,13 @@ namespace DummyWebApp
             
             var connectionString = builder.Configuration.GetConnectionString("GameDatabase");
             builder.Services.AddServiceDataLayer(builder.Configuration, connectionString!);
+
+            builder.Services.AddHttpClient<IGameApiClient, GameApiClient>(client =>
+            {
+                client.BaseAddress = new Uri("https://free-to-play-games-database.p.rapidapi.com/");
+                client.DefaultRequestHeaders.Add("X-RapidAPI-Key", "50b6755e82mshfd7f4d5a3a5066bp15f732jsn36b5d07836b2");
+                client.DefaultRequestHeaders.Add("X-RapidAPI-Host", "free-to-play-games-database.p.rapidapi.com");
+            });
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();

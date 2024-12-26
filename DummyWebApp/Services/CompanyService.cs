@@ -3,6 +3,7 @@ using DummyWebApp.Models.RequestModels.Company;
 using DummyWebApp.Models.ResponseModels.Company;
 using DummyWebApp.Services.Interfaces;
 using FluentResults;
+using GamesClient;
 using PostgreSQL.Repositories.Interfaces;
 
 namespace DummyWebApp.Services
@@ -11,11 +12,13 @@ namespace DummyWebApp.Services
     {
         private readonly ICompanyRepository _repository;
         private readonly IMapper _mapper;
+        //private readonly IGameApiClient _apiClent;
 
         public CompanyService(ICompanyRepository repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
+            //_apiClent = apiClent;
         }
 
         public async Task<Result<CompanyResponse>> GetCompanyById(int id)
@@ -28,7 +31,7 @@ namespace DummyWebApp.Services
             }
 
             var result = _mapper.Map<CompanyResponse>(getCompany.Value);
-            return Result.Ok(result);
+            return Result.Ok(result).WithSuccess("200 Ok");
         }
 
         public async Task<Result<List<CompanyResponse>>> GetAllCompanies()
@@ -41,7 +44,7 @@ namespace DummyWebApp.Services
             }
 
             var result = _mapper.Map<List<CompanyResponse>>(getAllCompanies.Value);
-            return Result.Ok(result);
+            return Result.Ok(result).WithSuccess("200 Ok");
         }
 
         public async Task<Result<CompanyResponse>> UpdateCompany(int id, UpdateCompanyRequest request)
@@ -58,7 +61,7 @@ namespace DummyWebApp.Services
             await _repository.UpdateAsync(getCompany.Value);
 
             var response = _mapper.Map<CompanyResponse>(getCompany.Value);
-            return Result.Ok(response);
+            return Result.Ok(response).WithSuccess("200 Ok");
         }
 
         public async Task<Result<bool>> DeleteCompany(int id)
@@ -68,7 +71,7 @@ namespace DummyWebApp.Services
             {
                 return result.ToResult();
             }
-            return Result.Ok(result.Value);
+            return Result.Ok(result.Value).WithSuccess("200 Ok");
         }
 
         public async Task<Result<CompanyResponse>> AddCompany(NewCompanyRequest request)
@@ -83,7 +86,18 @@ namespace DummyWebApp.Services
 
             var response = _mapper.Map<CompanyResponse>(mappedRequest);
 
-            return Result.Ok(response);
+            return Result.Ok(response).WithSuccess("200 Ok");
         }
+
+        //public async Task<Result<bool>> ImportCompaniesFromClient()
+        //{
+        //    var clientGamesResult = _apiClent.GetAllClientGames();
+        //    var clientCompanies = clientGamesResult.Result
+        //        .Where(game => !string.IsNullOrWhiteSpace(game.Publisher))
+        //        .Select(game => game.Publisher)
+        //        .Distinct()
+        //        .ToList();
+
+        //}
     }
 }

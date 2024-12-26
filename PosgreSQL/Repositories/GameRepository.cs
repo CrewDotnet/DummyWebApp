@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using PostgreSQL.Data;
 using PostgreSQL.DataModels;
 using PostgreSQL.Repositories.Interfaces;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace PostgreSQL.Repositories
 {
@@ -65,7 +64,7 @@ namespace PostgreSQL.Repositories
         {
             try
             {
-                if (_context.Games.Any(g => g.Name == request.Name))
+                if (_context.Games.Any(g => g.Title == request.Title))
                     return Result.Fail(
                         new Error("Game with provided name already exists").WithMetadata("StatusCode", 400));
 

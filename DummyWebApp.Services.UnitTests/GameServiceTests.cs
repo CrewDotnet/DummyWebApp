@@ -5,6 +5,7 @@ using Moq;
 using AutoMapper;
 using DummyWebApp.Models.RequestModels.Game;
 using DummyWebApp.Models.ResponseModels.Game;
+using GamesClient;
 using PostgreSQL.DataModels;
 using PostgreSQL.Repositories.Interfaces;
 
@@ -15,6 +16,7 @@ namespace DummyWebApp.Services.UnitTests
         private readonly Mock<IGameRepository> _mockGameRepository;
         private readonly Mock<IOrderRepository> _mockOrderRepository;
         private readonly Mock<IMapper> _mockMapper;
+        private readonly Mock<IGameApiClient> _mockApiClient;
         private readonly Fixture _fixture;
         private readonly GameService _gameService;
 
@@ -25,7 +27,7 @@ namespace DummyWebApp.Services.UnitTests
             _mockMapper = new Mock<IMapper>();
             _fixture = new Fixture();
             _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
-            _gameService = new GameService(_mockGameRepository.Object, _mockMapper.Object, _mockOrderRepository.Object);
+            _gameService = new GameService(_mockGameRepository.Object, _mockMapper.Object, _mockOrderRepository.Object, _mockApiClient.Object);
         }
 
         [Fact]
@@ -50,6 +52,7 @@ namespace DummyWebApp.Services.UnitTests
             // Assert
             result.IsSuccess.Should().BeTrue();
             result.Value.Should().BeEquivalentTo(gameDto);
+            result.Successes.Should().ContainSingle().Which.Message.Should().Be("200 Ok");
         }
 
         [Fact]
@@ -102,6 +105,8 @@ namespace DummyWebApp.Services.UnitTests
             // Assert
             result.IsSuccess.Should().BeTrue();
             result.Value.Should().BeEquivalentTo(gameDtos);
+            result.Successes.Should().ContainSingle().Which.Message.Should().Be("200 Ok");
+
         }
 
         [Fact]
@@ -139,6 +144,7 @@ namespace DummyWebApp.Services.UnitTests
             // Assert
             result.IsSuccess.Should().BeTrue();
             result.Value.Should().BeEquivalentTo(gameDto);
+            result.Successes.Should().ContainSingle().Which.Message.Should().Be("200 Ok");
         }
 
         [Fact]
@@ -178,6 +184,7 @@ namespace DummyWebApp.Services.UnitTests
             // Assert
             result.IsSuccess.Should().BeTrue();
             result.Value.Should().BeTrue();
+            result.Successes.Should().ContainSingle().Which.Message.Should().Be("200 Ok");
         }
 
         [Fact]
@@ -204,15 +211,15 @@ namespace DummyWebApp.Services.UnitTests
             // Arrange
             var gameId = _fixture.Create<int>();
             var request = _fixture.Build<UpdateGameRequest>()
-                .With(r => r.Name, "TestName")
+                .With(r => r.Title, "TestName")
                 .With(r => r.Price, 100)
                 .Create();
             var game = _fixture.Build<Game>()
-                .With(g => g.Name, "OldName")
+                .With(g => g.Title, "OldName")
                 .With(g => g.Price, 50)
                 .Create();
             var gameDto = _fixture.Build<GameDTO>()
-                .With(d => d.Name, request.Name)
+                .With(d => d.Title, request.Title)
                 .With(d => d.Price, request.Price)
                 .Create();
 
@@ -223,7 +230,7 @@ namespace DummyWebApp.Services.UnitTests
             _mockMapper.Setup(mapper => mapper.Map<Game>(request))
                 .Returns(new Game
                 {
-                    Name = request.Name,
+                    Title = request.Title,
                     Price = request.Price,
                     Company = new PostgreSQL.DataModels.Company()
                     {
@@ -237,9 +244,10 @@ namespace DummyWebApp.Services.UnitTests
 
             // Assert
             result.IsSuccess.Should().BeTrue();
-            game.Name.Should().Be(request.Name);
+            game.Title.Should().Be(request.Title);
             game.Price.Should().Be(request.Price);
             result.Value.Should().BeEquivalentTo(gameDto);
+            result.Successes.Should().ContainSingle().Which.Message.Should().Be("200 Ok");
         }
 
         [Fact]

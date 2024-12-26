@@ -53,14 +53,14 @@ namespace DummyWebApp.Validation.UnitTests
         {
             // Arrange
             var model = _fixture.Build<NewGameRequest>()
-                .With(g => g.Name, string.Empty)
+                .With(g => g.Title, string.Empty)
                 .Create();
 
             // Act
             var result = _newGameValidator.TestValidate(model);
 
             // Assert
-            result.ShouldHaveValidationErrorFor(g => g.Name)
+            result.ShouldHaveValidationErrorFor(g => g.Title)
                 .WithErrorMessage("Name must not be empty");
         }
 
@@ -69,14 +69,14 @@ namespace DummyWebApp.Validation.UnitTests
         {
             // Arrange
             var model = _fixture.Build<NewGameRequest>()
-                .With(g => g.Name, "Valid Game Name")
+                .With(g => g.Title, "Valid Game Name")
                 .Create();
 
             // Act
             var result = _newGameValidator.TestValidate(model);
 
             // Assert
-            result.ShouldNotHaveValidationErrorFor(g => g.Name);
+            result.ShouldNotHaveValidationErrorFor(g => g.Title);
         }
 
         [Fact]
@@ -115,14 +115,14 @@ namespace DummyWebApp.Validation.UnitTests
         {
             // Arrange
             var model = _fixture.Build<UpdateGameRequest>()
-                .With(g => g.Name, new string('A', 51))
+                .With(g => g.Title, new string('A', 51))
                 .Create();
 
             // Act
             var result = _updateGameValidator.TestValidate(model);
 
             // Assert
-            result.ShouldHaveValidationErrorFor(g => g.Name)
+            result.ShouldHaveValidationErrorFor(g => g.Title)
                 .WithErrorMessage("Name must be between 1 and 50 characters");
         }
 
@@ -131,14 +131,14 @@ namespace DummyWebApp.Validation.UnitTests
         {
             // Arrange
             var model = _fixture.Build<UpdateGameRequest>()
-                .With(g => g.Name, "Valid Name")
+                .With(g => g.Title, "Valid Name")
                 .Create();
 
             // Act
             var result = _updateGameValidator.TestValidate(model);
 
             // Assert
-            result.ShouldNotHaveValidationErrorFor(g => g.Name);
+            result.ShouldNotHaveValidationErrorFor(g => g.Title);
         }
     }
 }
