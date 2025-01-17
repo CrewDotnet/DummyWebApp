@@ -1,11 +1,12 @@
+using System.Reflection;
 using DummyWebApp.Mappings;
 using DummyWebApp.Services;
 using DummyWebApp.Services.Interfaces;
 using PostgreSQL.Data.Extensions;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using AutoMapper;
 using GamesClient;
+using DummyMadiatRExample;
 
 namespace DummyWebApp
 {
@@ -35,7 +36,10 @@ namespace DummyWebApp
             builder.Services.AddScoped<ICustomerService, CustomerService>();
             builder.Services.AddScoped<IOrderService, OrderService>();
             builder.Services.AddScoped<IOrderService, OrderService>();
-            
+            builder.Services.AddScoped<IGameClientService, GameClientService>();
+
+            builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+
             var connectionString = builder.Configuration.GetConnectionString("GameDatabase");
             builder.Services.AddServiceDataLayer(builder.Configuration, connectionString!);
 
@@ -47,8 +51,13 @@ namespace DummyWebApp
             });
 
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
-            
+            builder.Services.AddSwaggerGen(c =>
+            {
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+            });
+
             var app = builder.Build();
             DummyData.InitializeDummyData(app);
 

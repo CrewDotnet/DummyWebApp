@@ -64,11 +64,11 @@ namespace PostgreSQL.Repositories
         {
             try
             {
-                if (_context.Games.Any(g => g.Title == request.Title))
+                if (await _context.Games.AnyAsync(g => g.Title == request.Title))
                     return Result.Fail(
                         new Error("Game with provided name already exists").WithMetadata("StatusCode", 400));
 
-                request.Id = _context.Games.Max(g => g.Id) + 1;
+                request.Id = _context.Games.Any() ? _context.Games.Max(g => g.Id) + 1 : 1;
                 _context.Games.Add(request);
                 await _context.SaveChangesAsync();
 
@@ -87,7 +87,7 @@ namespace PostgreSQL.Repositories
         {
             try
             {
-                var existingGame = await _context.Companies.FirstOrDefaultAsync(c => c.Id == request.Id);
+                var existingGame = await _context.Companies.FirstOrDefaultAsync(c => c.Id == request.CompanyId);
                 if (existingGame == null)
                 {
                     return Result.Fail(new Error("Game does not exist")

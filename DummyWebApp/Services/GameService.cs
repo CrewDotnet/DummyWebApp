@@ -14,15 +14,13 @@ namespace DummyWebApp.Services
         private readonly IGameRepository _gameRepository;
         private readonly IOrderRepository _orderRepository;
         private readonly IMapper _mapper;
-        private readonly IGameApiClient _gameApiClient;
 
-        public GameService(IGameRepository gameRepository, IMapper mapper, IOrderRepository orderRepository, IGameApiClient gameApiClient)
+        public GameService(IGameRepository gameRepository, IMapper mapper, IOrderRepository orderRepository)
 
         {
             _gameRepository = gameRepository;
             _orderRepository = orderRepository;
             _mapper = mapper;
-            _gameApiClient = gameApiClient;
         }
         public async Task<Result<GameDTO>> GetGameById(int id)
         {
@@ -61,8 +59,9 @@ namespace DummyWebApp.Services
                 return gameToUpdate.ToResult();
             }
 
-            gameToUpdate.Value.Title = mappedRequest.Title;
-            gameToUpdate.Value.Price = mappedRequest.Price;
+            gameToUpdate.Value.Genre = mappedRequest.Genre;
+            gameToUpdate.Value.Platform = mappedRequest.Platform;
+            gameToUpdate.Value.ShortDescription = mappedRequest.ShortDescription;
 
             await _gameRepository.UpdateAsync(gameToUpdate.Value);
 
@@ -107,7 +106,6 @@ namespace DummyWebApp.Services
                 .Select(o => o.Id);
             return Result.Ok(orderIds).WithSuccess("200 Ok");
         }
-
 
     }
 }

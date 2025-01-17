@@ -16,7 +16,6 @@ namespace DummyWebApp.Services.UnitTests
         private readonly Mock<IGameRepository> _mockGameRepository;
         private readonly Mock<IOrderRepository> _mockOrderRepository;
         private readonly Mock<IMapper> _mockMapper;
-        private readonly Mock<IGameApiClient> _mockApiClient;
         private readonly Fixture _fixture;
         private readonly GameService _gameService;
 
@@ -27,7 +26,7 @@ namespace DummyWebApp.Services.UnitTests
             _mockMapper = new Mock<IMapper>();
             _fixture = new Fixture();
             _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
-            _gameService = new GameService(_mockGameRepository.Object, _mockMapper.Object, _mockOrderRepository.Object, _mockApiClient.Object);
+            _gameService = new GameService(_mockGameRepository.Object, _mockMapper.Object, _mockOrderRepository.Object);
         }
 
         [Fact]
@@ -211,16 +210,19 @@ namespace DummyWebApp.Services.UnitTests
             // Arrange
             var gameId = _fixture.Create<int>();
             var request = _fixture.Build<UpdateGameRequest>()
-                .With(r => r.Title, "TestName")
-                .With(r => r.Price, 100)
+                .With(r => r.Platform, "TestPlatform")
+                .With(r => r.ShortDescription, "TestDesc")
+                .With(r => r.Genre, "TestGenre")
                 .Create();
             var game = _fixture.Build<Game>()
-                .With(g => g.Title, "OldName")
-                .With(g => g.Price, 50)
+                .With(g => g.Platform, "OldTestPlatform")
+                .With(g => g.ShortDescription, "OldTestDesc")
+                .With(g => g.Genre, "OldTestGenre")
                 .Create();
             var gameDto = _fixture.Build<GameDTO>()
-                .With(d => d.Title, request.Title)
-                .With(d => d.Price, request.Price)
+                .With(d => d.Platform, "NewTestPlatform")
+                .With(d => d.ShortDescription, "NewTestDesc")
+                .With(d => d.Genre, "NewTestGenre")
                 .Create();
 
             _mockGameRepository
@@ -230,9 +232,13 @@ namespace DummyWebApp.Services.UnitTests
             _mockMapper.Setup(mapper => mapper.Map<Game>(request))
                 .Returns(new Game
                 {
-                    Title = request.Title,
-                    Price = request.Price,
-                    Company = new PostgreSQL.DataModels.Company()
+                    Platform = request.Platform,
+                    ShortDescription = request.ShortDescription,
+                    Genre = request.Genre,
+                    CompanyId = 12,
+                    Title = "TestTitle",
+                    Price = 23,
+                    Company = new Company()
                     {
                         Name = "SomeCompany"
                     }
@@ -244,8 +250,9 @@ namespace DummyWebApp.Services.UnitTests
 
             // Assert
             result.IsSuccess.Should().BeTrue();
-            game.Title.Should().Be(request.Title);
-            game.Price.Should().Be(request.Price);
+            game.Platform.Should().Be(request.Platform);
+            game.ShortDescription.Should().Be(request.ShortDescription);
+            game.Genre.Should().Be(request.Genre);
             result.Value.Should().BeEquivalentTo(gameDto);
             result.Successes.Should().ContainSingle().Which.Message.Should().Be("200 Ok");
         }

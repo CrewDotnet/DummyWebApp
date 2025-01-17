@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DummyWebApp.Validation.Unit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GamesClient", "GamesClient\GamesClient.csproj", "{EA8BDE5F-4F74-4DD9-8364-275467FB6ECE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DummyWebApp.Handlers.UnitTests", "DummyWebApp.Handlers.UnitTests\DummyWebApp.Handlers.UnitTests.csproj", "{76D9CB71-7CB1-4C0E-B7A4-539E108FBC27}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{EA8BDE5F-4F74-4DD9-8364-275467FB6ECE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EA8BDE5F-4F74-4DD9-8364-275467FB6ECE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EA8BDE5F-4F74-4DD9-8364-275467FB6ECE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76D9CB71-7CB1-4C0E-B7A4-539E108FBC27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76D9CB71-7CB1-4C0E-B7A4-539E108FBC27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76D9CB71-7CB1-4C0E-B7A4-539E108FBC27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76D9CB71-7CB1-4C0E-B7A4-539E108FBC27}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

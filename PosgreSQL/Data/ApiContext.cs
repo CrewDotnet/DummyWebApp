@@ -12,7 +12,8 @@ namespace PostgreSQL.Data
             modelBuilder.Entity<Game>()
                 .HasOne(g => g.Company)
                 .WithMany(c => c.Games)
-                .HasForeignKey(g => g.CompanyId);
+                .HasForeignKey(g => g.CompanyId)
+                .IsRequired();
             
             modelBuilder.Entity<Customer>()
                 .HasMany(c => c.Games)
@@ -27,7 +28,8 @@ namespace PostgreSQL.Data
             modelBuilder.Entity<Order>()
                 .HasOne(o => o.Customer)
                 .WithMany(c => c.Orders)
-                .HasForeignKey(o => o.CustomerId);
+                .HasForeignKey(o => o.CustomerId)
+                .IsRequired();
 
             base.OnModelCreating(modelBuilder);
         }

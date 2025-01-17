@@ -1,4 +1,6 @@
-﻿using DummyWebApp.Models.ResponseModels.Game;
+﻿using DummyMadiatRExample.Models;
+using DummyWebApp.Models;
+using DummyWebApp.Models.ResponseModels.Game;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DummyWebApp.Presenters.Game

@@ -7,13 +7,19 @@ namespace DummyWebApp.Validators.Game
     {
         public UpdateGameRequestValidator()
         {
-            RuleFor(g => g.Price)
-                .NotEmpty().WithMessage("Game must have a valid price")
-                .GreaterThan(0).WithMessage("Price must be greater than 0");
-            RuleFor(g => g.Title)
-                .NotEmpty().WithMessage("Name must not be empty")
-                .NotNull().WithMessage("Name must not be null")
-                .Length(1, 50).WithMessage("Name must be between 1 and 50 characters");
+            RuleFor(g => g.Genre)
+                .NotEmpty().WithMessage("Genre must not be empty")
+                .NotNull().WithMessage("Genre must not be null")
+                .Length(1, 50).WithMessage("Genre must be between 1 and 50 characters");
+            RuleFor(g => g.ShortDescription)
+                .NotEmpty().WithMessage("Short description must not be empty")
+                .NotNull().WithMessage("Short description must not be null")
+                .Length(1, 50).WithMessage("Short descriptione must be between 1 and 500 characters");
+            RuleFor(g => g.Platform)
+                .NotEmpty().WithMessage("Platform must not be empty")
+                .NotNull().WithMessage("Platform must not be null")
+                .Length(1, 50).WithMessage("Platform must be between 1 and 15 characters");
         }
     }
 }
+

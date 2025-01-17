@@ -6,6 +6,5 @@ namespace GamesClient
     {
         Task<Result<GameClientModel>> GetClientGameByIdAsync(int id);
         Task<Result<IEnumerable<GameClientModel>?>> GetAllClientGames();
-        Task<Result<bool>> AddClientGamesToExistingCompany();
     }
 }

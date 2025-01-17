@@ -2,7 +2,8 @@
 {
     public class UpdateGameRequest
     {
-        public required string? Title { get; set; }
-        public required decimal Price { get; set; }
+        public string? ShortDescription { get; set; }
+        public string? Genre { get; set; }
+        public string? Platform { get; set; }
     }
 }

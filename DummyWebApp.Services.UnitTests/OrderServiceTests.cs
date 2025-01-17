@@ -150,13 +150,15 @@ namespace DummyWebApp.Services.UnitTests
                     new Game
                     {
                         Id = 73, Title = "Name1", Price = 215M,
-                        Company = company
+                        Company = company,
+                        CompanyId = 12
                     },
-                    new Game { Id = 167, Title = "Name2", Price = 134M, Company = company },
+                    new Game { Id = 167, Title = "Name2", Price = 134M, Company = company, CompanyId = 12 },
                     new Game
                     {
                         Id = 97, Title = "Name3", Price = 41M,
-                        Company = company
+                        Company = company,
+                        CompanyId = 12
                     }
                 }));
 

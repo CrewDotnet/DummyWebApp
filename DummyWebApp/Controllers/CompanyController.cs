@@ -2,11 +2,9 @@
 using DummyWebApp.Models.ErrorModel;
 using DummyWebApp.Models.RequestModels.Company;
 using DummyWebApp.Models.ResponseModels.Company;
-using DummyWebApp.Presenters;
 using DummyWebApp.Presenters.Company;
 using DummyWebApp.Presenters.Erorr;
 using DummyWebApp.Services.Interfaces;
-using FluentResults;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
